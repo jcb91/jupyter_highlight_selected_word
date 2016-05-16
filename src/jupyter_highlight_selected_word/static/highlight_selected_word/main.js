@@ -35,6 +35,7 @@ define(function (require, exports, module) {
 	// This object gets updated on config load.
 	var params = {
 		enable_on_load : true,
+		code_cells_only: false,
 		delay: 100,
 		words_only: false,
 		min_chars: 2,
