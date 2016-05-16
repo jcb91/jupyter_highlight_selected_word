@@ -1,12 +1,7 @@
 # coding: utf-8
 """Provides magically-named functions for python-package installation."""
 
-import io
-import json
-
-npm_package = json.load(io.open('./package.json', 'r'))
-
-__version__ = npm_package['version']
+__version__ = '0.0.1'
 
 
 def _jupyter_nbextension_paths():
