@@ -1,0 +1,14 @@
+# explicit includes
+include package.json
+include LICENSE.txt
+include README.md
+
+graft src
+
+# Patterns to exclude from any directory
+global-exclude *~
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .git
+global-exclude .ipynb_checkpoints
+global-exclude .DS_Store

@@ -1,0 +1,9 @@
+.highlight_selected_word_toggle > .fa {
+	margin-top: -2px;
+	margin-right: -16px;
+}
+
+.CodeMirror-focused .cm-matchhighlight,
+.CodeMirror-focused .CodeMirror-selection-highlight-scrollbar {
+	background-color: #90ff90; /* this color gets overwritten by js anyway */
+}

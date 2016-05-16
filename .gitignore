@@ -1,0 +1,44 @@
+*~
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Unit test / coverage reports
+htmlcov
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+
+# Sphinx documentation
+docs/_build
+
+.idea
+
+# pip install
+*.egg
+*.egg-info
+dist
+build
+eggs
+.eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+venv*/
+pyvenv*/
+MANIFEST
+
+# Installer logs
+pip-log.txt
+
+# ipython notebook checkpoints
+.ipynb_checkpoints
