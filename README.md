@@ -10,6 +10,54 @@ There are a few configurable options, all of which sit under the config key
 `highlight_selected_word` in the `notebook` config section.
 
 
+Installation
+============
+
+
+Installing files
+----------------
+
+First, install the pip package:
+
+```
+pip install jupyter_highlight_selected_word
+```
+
+Next, if you have jupyter version 4.2 or greater, you can install from the pip
+package, directly using jupyter:
+
+```
+jupyter nbextension install --py jupyter_highlight_selected_word
+```
+
+For jupyter versions before 4.2, you'll need to do a little more work to find
+the extension static files. To find the nbextension source directory, you can
+use the following one-liner (for a rather stretched definition of 'line'):
+
+```
+python -c "import os.path as p; from jupyter_highlight_selected_word import __file__ as f, _jupyter_nbextension_paths as n; print(p.normpath(p.join(p.dirname(f), n()[0]['src'])))"
+```
+
+then execute
+
+```
+jupyter nbextension install <output source directory>
+```
+
+replacing `<output source directory>` with the directory found above.
+
+
+Enabling the nbextension
+------------------------
+
+Once you've installed the nbextension files, you can _enable_ the nbextension,
+so that it gets loaded automatically in each notebook:
+
+```
+jupyter nbextension enable highlight_selected_word/main
+```
+
+
 Options
 =======
 
