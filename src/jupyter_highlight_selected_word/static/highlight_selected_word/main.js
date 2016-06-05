@@ -96,13 +96,18 @@ define(function (require, exports, module) {
 				break;
 			}
 		}
+		if (stylesheet === undefined) {
+			console.warn("Couldn't find any stylesheets owned by", $ownerNode);
+			return;
+		}
 		selectorTextRegexp = new RegExp(selectorTextRegexp);
 		for (ii = 0; ii < stylesheet.cssRules.length; ii++) {
 			if (selectorTextRegexp.test(stylesheet.cssRules[ii].selectorText)) {
 				$.extend(stylesheet.cssRules[ii].style, style);
-				break;
+				return;
 			}
 		}
+		console.warn("Couldn't find any rule with a selector matching", selectorTextRegexp, 'in', $ownerNode);
 	}
 
 	function load_extension () {
@@ -128,7 +133,7 @@ define(function (require, exports, module) {
 				// alter css according to config
 				alter_css(
 					$stylesheet,
-					/^\.CodeMirror-focused\s*\.cm-matchhighlight$/,
+					/^\.CodeMirror-focused\s*\.cm-matchhighlight\b/,
 					{ backgroundColor: params.highlight_color }
 				);
 
