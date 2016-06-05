@@ -13,13 +13,9 @@ setup(
     url='https://github.com/jcb91/jupyter_highlight_selected_word.git',
     license='BSD',
     long_description="""
-        Jupyter notebook extension that enables the CodeMirror addon "Match
-        Highlighter" (see https://codemirror.net/demo/matchhighlighter.html),
-        which highlights all instances of the selected word in the current
-        editor.
-
-        There are a few configurable options, all of which sit under the config
-        key ``highlight_selected_word`` in the ``notebook`` config section.
+Jupyter notebook extension that enables the CodeMirror addon
+`Match Highlighter <https://codemirror.net/demo/matchhighlighter.html>`_
+which highlights all instances of the selected word in the current editor.
     """,
     packages=find_packages('src'),
     package_dir={'': 'src'},
