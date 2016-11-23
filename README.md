@@ -1,6 +1,8 @@
 Highlight selected word
 =======================
 
+[![Join the chat at https://gitter.im/jcb91/jupyter_highlight_selected_word](https://badges.gitter.im/jcb91/jupyter_highlight_selected_word.svg)](https://gitter.im/jcb91/jupyter_highlight_selected_word?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Enables the CodeMirror addon "[Match Highlighter]", which highlights all
 instances of the selected word in the current editor.
 
