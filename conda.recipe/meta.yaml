@@ -1,0 +1,42 @@
+# This conda recipe is for use with the git repo (hence the local url).
+# For a simple conda install (non bleeding-edge), see the conda-forge recipe at
+# https://github.com/conda-forge/jupyter_highlight_selected_word-feedstock
+
+{% set name = 'jupyter_highlight_selected_word' %}
+
+package:
+  name: {{ name }}
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  git_url: ../
+
+build:
+  number: {{ GIT_DESCRIBE_NUMBER }}
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - setuptools
+    - jupyter_contrib_core >=0.3
+    - notebook >=4.0
+
+test:
+  imports:
+    - jupyter_highlight_selected_word
+
+about:
+  summary: |
+      Jupyter nbextension which enables the CodeMirror addon "Match Highlighter",
+      which highlights all instances of the selected word in the current editor.
+  home: https://github.com/jfbercher/jupyter_latex_envs
+  license_file: LICENSE.txt
+  license: BSD 3-clause
+
+extra:
+  recipe-maintainers:
+    - jcb91
