@@ -9,60 +9,72 @@ Highlight selected word
 [![Anaconda cloud](https://anaconda.org/conda-forge/jupyter_highlight_selected_word/badges/version.svg)](https://anaconda.org/conda-forge/jupyter_highlight_selected_word)
 
 
-Enables the CodeMirror addon "[Match Highlighter]", which highlights all
-instances of the selected word in the current editor.
-
-[Match Highlighter]: https://codemirror.net/demo/matchhighlighter.html
+Enables the CodeMirror addon [Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
+which highlights all instances of the selected word in the current editor.
 
 There are a few configurable options, all of which sit under the config key
 `highlight_selected_word` in the `notebook` config section.
 
 
 Installation
-============
+------------
+
+`jupyter_highlight_selected_word` is available as part of the
+[jupyter_contrib_nbextensions](https://github.com/ipython-contrib/jupyter_contrib_nbextensions)
+collection. If you want to install this nbextension without the rest of the
+contrib collection, read on.
+
+To use the nbextension, there are three basic steps:
+
+1.  First, install the python package:
+
+        pip install jupyter_highlight_selected_word
+
+    Or, __for those using conda__, there is now a recipe provided through the
+    excellent
+    [conda-forge]()
+    [channel](),
+    which also performs the install into the conda env's jupyter data
+    directory, so you can skip step 2. To install the conda recipe, use
+
+        conda install -c conda-forge jupyter_highlight_selected_word
+
+2.  Next, install javascript files from the python package into a jupyter data
+    directory.
+
+    If you have jupyter version 4.2 or greater, you can install directly
+    using jupyter:
+
+        jupyter nbextension install --py jupyter_highlight_selected_word
+
+    For jupyter versions before 4.2, you'll need to do a little more work to
+    find the nbextension's static files. To find the nbextension source
+    directory, you can use the following one-liner
+    (for a rather stretched definition of 'line'):
+
+        python -c "import os.path as p; from jupyter_highlight_selected_word import __file__ as f, _jupyter_nbextension_paths as n; print(p.normpath(p.join(p.dirname(f), n()[0]['src'])))"
+
+    then execute
+
+        jupyter nbextension install <output source directory>
+
+    replacing `<output source directory>` with the directory found above.
 
 
-Installing files
-----------------
+3.  Enable the nbextension, so that it gets loaded automatically in each
+    notebook:
 
-First, install the pip package:
-
-	pip install jupyter_highlight_selected_word
-
-Next, if you have jupyter version 4.2 or greater, you can install from the pip
-package, directly using jupyter:
-
-	jupyter nbextension install --py jupyter_highlight_selected_word
-
-For jupyter versions before 4.2, you'll need to do a little more work to find
-the extension static files. To find the nbextension source directory, you can
-use the following one-liner (for a rather stretched definition of 'line'):
-
-	python -c "import os.path as p; from jupyter_highlight_selected_word import __file__ as f, _jupyter_nbextension_paths as n; print(p.normpath(p.join(p.dirname(f), n()[0]['src'])))"
-
-then execute
-
-	jupyter nbextension install <output source directory>
-
-replacing `<output source directory>` with the directory found above.
-
-
-Enabling the nbextension
-------------------------
-
-Once you've installed the nbextension files, you can _enable_ the nbextension,
-so that it gets loaded automatically in each notebook:
-
-	jupyter nbextension enable highlight_selected_word/main
+        jupyter nbextension enable highlight_selected_word/main
 
 
 Options
-=======
+-------
 
 Options are stored in the notebook section of the nbconfig.
-The easiest way to configure these is using the configuration serverextension
-available at https://github.com/ipython-contrib/IPython-notebook-extensions,
-but you can also configure them directly with a few lines of python.
+The easiest way to configure these is using the
+[jupyter_nbextensions_configurator](https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator)
+serverextension, but you can also configure them directly with a few lines of
+python.
 
 The available options are:
 
@@ -92,13 +104,12 @@ cm.update('notebook', {'highlight_selected_word': {
 
 
 Feedback
-========
+--------
 
-If you have any feedback, or have any problems, please let me know by opening
-an [issue] at the project's [github repository].
-
-[issue]: https://github.com/jcb91/jupyter_highlight_selected_word/issues
-[github repository]: https://github.com/jcb91/jupyter_highlight_selected_word
+If you have any feedback, or have any problems, please let me know by
+[opening an issue](https://github.com/jcb91/jupyter_highlight_selected_word/issues/new)
+at the project's
+[github repository](https://github.com/jcb91/jupyter_highlight_selected_word).
 
 Thanks!
 

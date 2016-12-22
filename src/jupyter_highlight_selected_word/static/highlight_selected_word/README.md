@@ -1,22 +1,24 @@
 Highlight selected word
 =======================
 
-Enables the CodeMirror addon "[Match Highlighter]", which highlights all
-instances of the selected word in the current editor.
+[![Join the chat at https://gitter.im/jcb91/jupyter_highlight_selected_word](https://badges.gitter.im/jcb91/jupyter_highlight_selected_word.svg)](https://gitter.im/jcb91/jupyter_highlight_selected_word?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![GitHub issues](https://img.shields.io/github/issues/jcb91/jupyter_highlight_selected_word.svg?maxAge=3600)](https://github.com/jcb91/jupyter_highlight_selected_word/issues)
 
-[Match Highlighter]: https://codemirror.net/demo/matchhighlighter.html
+Enables the CodeMirror addon [Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
+which highlights all instances of the selected word in the current editor.
 
 There are a few configurable options, all of which sit under the config key
 `highlight_selected_word` in the `notebook` config section.
 
 
 Options
-=======
+-------
 
 Options are stored in the notebook section of the nbconfig.
-The easiest way to configure these is using the configuration serverextension
-available at https://github.com/ipython-contrib/IPython-notebook-extensions,
-but you can also configure them directly with a few lines of python.
+The easiest way to configure these is using the
+[jupyter_nbextensions_configurator](https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator)
+serverextension, but you can also configure them directly with a few lines of
+python.
 
 The available options are:
 
@@ -46,13 +48,12 @@ cm.update('notebook', {'highlight_selected_word': {
 
 
 Feedback
-========
+--------
 
-If you have any feedback, or have any problems, please let me know by opening
-an [issue] at the project's [github repository].
-
-[issue]: https://github.com/jcb91/jupyter_highlight_selected_word/issues
-[github repository]: https://github.com/jcb91/jupyter_highlight_selected_word
+If you have any feedback, or have any problems, please let me know by
+[opening an issue](https://github.com/jcb91/jupyter_highlight_selected_word/issues/new)
+at the project's
+[github repository](https://github.com/jcb91/jupyter_highlight_selected_word).
 
 Thanks!
 
