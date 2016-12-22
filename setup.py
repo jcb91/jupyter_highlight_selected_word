@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='jupyter_highlight_selected_word',
-    version='0.0.5',
+    version='0.0.6',
     description=('Jupyter notebook extension that enables highighting of every'
                  ' instance of the current word in the editor.'),
     author='Joshua Cooke Barnes',
