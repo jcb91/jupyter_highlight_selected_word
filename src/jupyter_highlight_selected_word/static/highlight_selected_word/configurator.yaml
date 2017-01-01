@@ -5,31 +5,50 @@ Main: main.js
 Description: Enables the CodeMirror addon "Match Highlighter"
 Link: README.md
 Parameters:
+
+- name: highlight_selected_word.highlight_across_all_cells
+  input_type: checkbox
+  default: true
+  description: |
+    Highlight matches across all cells. If false, only matches within the
+    currently selected cell will be highlighted.
+
 - name: highlight_selected_word.code_cells_only
   input_type: checkbox
   default: false
-  description: 'Only apply highlights to editors for Code cells, not, for example, Markdown or Raw cells'
+  description: |
+    Only apply highlights to editors for Code cells, not, for example, Markdown
+    or Raw cells
+
 - name: highlight_selected_word.highlight_color
   input_type: color
   default: '#90EE90'
   description: Color to highlight matching words
+
 - name: highlight_selected_word.delay
   input_type: number
   default: 100
   min: 0
   step: 1
   description: 'Wait time, in milliseconds, before highlighting the matches'
+
 - name: highlight_selected_word.words_only
   input_type: checkbox
   default: false
   description: Only highlight matches if the selected text is a word
+
 - name: highlight_selected_word.min_chars
   input_type: number
   default: 2
   min: 0
   step: 1
-  description: Minimum number of characters that must be selected for the highlighting behavior to occur
+  description: |
+    Minimum number of characters that must be selected for the highlighting
+    behavior to occur
+
 - name: highlight_selected_word.show_token
   input_type: text
   default: '\w'
-  description: Token (regex) to highlight when nothing is selected
+  description: |
+    Token (regex) to highlight when nothing is selected. If blank, nothing is
+    highlighted when nothing is selected.

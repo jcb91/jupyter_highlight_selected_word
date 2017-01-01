@@ -4,8 +4,12 @@ Highlight selected word
 [![Join the chat at https://gitter.im/jcb91/jupyter_highlight_selected_word](https://badges.gitter.im/jcb91/jupyter_highlight_selected_word.svg)](https://gitter.im/jcb91/jupyter_highlight_selected_word?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub issues](https://img.shields.io/github/issues/jcb91/jupyter_highlight_selected_word.svg?maxAge=3600)](https://github.com/jcb91/jupyter_highlight_selected_word/issues)
 
-Enables the CodeMirror addon [Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
-which highlights all instances of the selected word in the current editor.
+This nbextension highlights all instances of the selected word in either the
+current cell's editor, or in any cell in the notebook.
+It is based on the CodeMirror addon
+[Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
+but now uses its own codebase in order to permit matching across multiple
+editors.
 
 There are a few configurable options, all of which sit under the config key
 `highlight_selected_word` in the `notebook` config section.
@@ -22,6 +26,9 @@ python.
 
 The available options are:
 
+* `highlight_selected_word.highlight_across_all_cells` - if `true`, (default)
+  highlight matches across all cells. If `false`, only matches within the
+  currently selected cell will be highlighted.
 * `highlight_selected_word.code_cells_only` - Only apply highlights to editors
   for Code cells, not, for example, Markdown or Raw cells
 * `highlight_selected_word.highlight_color` - Color to highlight matching words
