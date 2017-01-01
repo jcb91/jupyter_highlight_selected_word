@@ -23,7 +23,12 @@ Parameters:
 - name: highlight_selected_word.highlight_color
   input_type: color
   default: '#90EE90'
-  description: Color to highlight matching words
+  description: Color used to highlight matching words in the focussed cell
+
+- name: highlight_selected_word.highlight_color_blurred
+  input_type: color
+  default: '#BBFFBB'
+  description: Color used to highlight matching words in blurred (non-active) cells
 
 - name: highlight_selected_word.delay
   input_type: number

@@ -3,7 +3,12 @@
 	margin-right: -16px;
 }
 
-.CodeMirror-focused .cm-matchhighlight,
-.CodeMirror-focused .CodeMirror-selection-highlight-scrollbar {
-	background-color: #90ff90; /* this color gets overwritten by js anyway */
+.notebook_app.edit_mode .cm-matchhighlight,
+.notebook_app.edit_mode .CodeMirror-selection-highlight-scrollbar {
+	background-color: #BBFFBB; /* this color gets overwritten by js anyway */
+}
+
+.notebook_app .CodeMirror-focused .cm-matchhighlight,
+.notebook_app .CodeMirror-focused .CodeMirror-selection-highlight-scrollbar {
+	background-color: #90EE90; /* this color gets overwritten by js anyway */
 }

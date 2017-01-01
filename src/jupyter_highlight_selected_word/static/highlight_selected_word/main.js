@@ -30,6 +30,7 @@ define(function (require, exports, module) {
 		min_chars: 2,
 		show_token: '\\w',
 		highlight_color: '#90EE90',
+		highlight_color_blurred: '#BBFFBB',
 		highlight_style: 'matchhighlight',
 		trim: true,
 	};
@@ -294,7 +295,12 @@ define(function (require, exports, module) {
 				// alter css according to config
 				alter_css(
 					$stylesheet,
-					/^\.CodeMirror-focused\s*\.cm-matchhighlight\b/,
+					/^\.notebook_app\.edit_mode\s+\.cm-matchhighlight\s*[,\{]/,
+					{ backgroundColor: params.highlight_color_blurred }
+				);
+				alter_css(
+					$stylesheet,
+					/^\.notebook_app\s+\.CodeMirror-focused\s+.cm-matchhighlight\s*[,\{]/,
 					{ backgroundColor: params.highlight_color }
 				);
 
