@@ -20,6 +20,7 @@
 define(function (require, exports, module) {
 	'use strict';
 
+	var $ = require('jquery');
 	var Jupyter = require('base/js/namespace');
 	var Cell = require('notebook/js/cell').Cell;
 	var CodeCell = require('notebook/js/codecell').CodeCell;
@@ -128,7 +129,7 @@ define(function (require, exports, module) {
 		new ConfigSection('notebook', {base_url : Jupyter.notebook.base_url})
 			.load()
 			.then(function (conf_data) {
-				$.extend(true, params, conf_data.highlight_selected_word); // update params
+				$.extend(true, params, conf_data.highlight_selected_word);
 
 				// alter css according to config
 				alter_css(
