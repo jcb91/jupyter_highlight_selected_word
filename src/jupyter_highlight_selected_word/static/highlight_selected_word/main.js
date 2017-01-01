@@ -44,6 +44,22 @@ define(function (require, exports, module) {
 		highlight_color: '#90EE90',
 	};
 
+	/**
+	 *  Return an array of cells to which match highlighting is relevant,
+	 *  dependent on the code_cells_only parameter
+	 */
+	function get_relevant_cells () {
+		var cells = Jupyter.notebook.get_cells();
+		var relevant_cells = [];
+		for (var ii=0; ii<cells.length; ii++) {
+			var cell = cells[ii];
+			if (!params.code_cells_only || cell instanceof CodeCell) {
+				relevant_cells.push(cell);
+			}
+		}
+		return relevant_cells;
+	}
+
 	function add_menu_item () {
 		if ($('#view_menu').find('.' + menu_toggle_class).length < 1) {
 			var menu_item = $('<li/>')
@@ -77,10 +93,8 @@ define(function (require, exports, module) {
 		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatches = new_opts;
 
 		// And change any existing cells:
-		Jupyter.notebook.get_cells().forEach(function (cell, idx, array) {
-			if (!params.code_cells_only || cell instanceof CodeCell) {
-				cell.code_mirror.setOption('highlightSelectionMatches', new_opts);
-			}
+		get_relevant_cells().forEach(function (cell, idx, array) {
+			cell.code_mirror.setOption('highlightSelectionMatches', new_opts);
 		});
 		// update menu class
 		$('.' + menu_toggle_class + ' > .fa').toggleClass('fa-check', set_on);
