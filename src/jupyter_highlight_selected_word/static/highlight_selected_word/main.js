@@ -234,19 +234,12 @@ define(function (require, exports, module) {
 	function toggle_highlight_selected (set_on) {
 		set_on = (set_on !== undefined) ? set_on : (params.enable_on_load = !params.enable_on_load);
 
-		var new_opts = set_on ? {
-			delay: params.delay,
-			wordsOnly: params.words_only,
-			minChars: params.min_chars,
-			showToken: new RegExp(params.show_token),
-		} : false;
-
 		// Change defaults for new cells:
-		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = new_opts;
+		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = set_on;
 
 		// And change any existing cells:
 		get_relevant_cells().forEach(function (cell, idx, array) {
-			cell.code_mirror.setOption('highlightSelectionMatchesInJupyterCells', new_opts);
+			cell.code_mirror.setOption('highlightSelectionMatchesInJupyterCells', set_on);
 		});
 		// update menu class
 		$('.' + menu_toggle_class + ' > .fa').toggleClass('fa-check', set_on);
