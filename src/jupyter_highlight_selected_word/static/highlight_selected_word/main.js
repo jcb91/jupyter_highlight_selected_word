@@ -51,12 +51,15 @@ define(function (require, exports, module) {
 	// define a CodeMirror option for highlighting matches in all cells
 	CodeMirror.defineOption("highlightSelectionMatchesInJupyterCells", false, function (cm, val, old) {
 		if (old && old != CodeMirror.Init) {
+			globalState.active = false;
 			if (globalState.overlay) {
 				get_relevant_cells().forEach(function (cell, idx, array) {
 					cell.code_mirror.removeOverlay(globalState.overlay);
 				});
 			}
+			globalState.overlay = null;
 			clearTimeout(globalState.timeout);
+			globalState.timeout = null;
 			cm.off("cursorActivity", callbackCursorActivity);
 			cm.off("focus", callbackOnFocus);
 		}
