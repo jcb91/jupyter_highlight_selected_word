@@ -4,6 +4,7 @@ Highlight selected word
 [![Join the chat at https://gitter.im/jcb91/jupyter_highlight_selected_word](https://badges.gitter.im/jcb91/jupyter_highlight_selected_word.svg)](https://gitter.im/jcb91/jupyter_highlight_selected_word?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub issues](https://img.shields.io/github/issues/jcb91/jupyter_highlight_selected_word.svg?maxAge=3600)](https://github.com/jcb91/jupyter_highlight_selected_word/issues)
 
+
 This nbextension highlights all instances of the selected word in either the
 current cell's editor, or in any cell in the notebook.
 It is based on the CodeMirror addon
@@ -31,7 +32,10 @@ The available options are:
   currently selected cell will be highlighted.
 * `highlight_selected_word.code_cells_only` - Only apply highlights to editors
   for Code cells, not, for example, Markdown or Raw cells
-* `highlight_selected_word.highlight_color` - Color to highlight matching words
+* `highlight_selected_word.highlight_color` - Color used to highlight matching
+  words in the focussed (active) cell
+* `highlight_selected_word.highlight_color_blurred` - Color used to highlight
+  matching words in blurred (non-active) cells
 * `highlight_selected_word.delay` - Wait time (in milliseconds) before
   highlighting the matches
 * `highlight_selected_word.words_only` - If true, only highlight matches if the
