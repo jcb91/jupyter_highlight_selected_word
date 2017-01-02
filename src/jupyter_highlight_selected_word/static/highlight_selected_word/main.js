@@ -73,12 +73,12 @@ define(function (require, exports, module) {
 	});
 
 	/**
-	 *  The functions callbackCursorActivity and callbackOnFocus
-	 *  are taken essentially unmodified from cm's match-highlighter, while
-	 *  scheduleHighlight is also taken without major modification beyond
-	 *  calling a different highlight scheduling function.
-	 *  The main difference for all three is using our global state rather
-	 *  match-highlighter's per-cm one.
+	 *  The functions callbackCursorActivity, callbackOnFocus and
+	 *  scheduleHighlight are taken without major unmodified from cm's
+	 *  match-highlighter.
+	 *  The main difference is using our global state rather than
+	 *  match-highlighter's per-cm state, and a different highlighting function
+	 *  is scheduled.
 	 */
 	function callbackCursorActivity (cm) {
 		if (globalState.active || cm.hasFocus()) {
@@ -87,10 +87,10 @@ define(function (require, exports, module) {
 	}
 
 	function callbackOnFocus (cm) {
-		if (!globalState.active) {
-			globalState.active = true;
-			scheduleHighlight(cm);
-		}
+		// unlike cm match-highlighter, we *do* want to schedule a highight on
+		// focussing the editor
+		globalState.active = true;
+		scheduleHighlight(cm);
 	}
 
 	function scheduleHighlight (cm) {
