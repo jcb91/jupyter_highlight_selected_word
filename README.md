@@ -9,8 +9,12 @@ Highlight selected word
 [![Anaconda cloud](https://anaconda.org/conda-forge/jupyter_highlight_selected_word/badges/version.svg)](https://anaconda.org/conda-forge/jupyter_highlight_selected_word)
 
 
-Enables the CodeMirror addon [Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
-which highlights all instances of the selected word in the current editor.
+This nbextension highlights all instances of the selected word in either the
+current cell's editor, or in any cell in the notebook.
+It is based on the CodeMirror addon
+[Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
+but now uses its own codebase in order to permit matching across multiple
+editors.
 
 There are a few configurable options, all of which sit under the config key
 `highlight_selected_word` in the `notebook` config section.
@@ -78,9 +82,15 @@ python.
 
 The available options are:
 
+* `highlight_selected_word.highlight_across_all_cells` - if `true`, (default)
+  highlight matches across all cells. If `false`, only matches within the
+  currently selected cell will be highlighted.
 * `highlight_selected_word.code_cells_only` - Only apply highlights to editors
   for Code cells, not, for example, Markdown or Raw cells
-* `highlight_selected_word.highlight_color` - Color to highlight matching words
+* `highlight_selected_word.highlight_color` - Color used to highlight matching
+  words in the focussed (active) cell
+* `highlight_selected_word.highlight_color_blurred` - Color used to highlight
+  matching words in blurred (non-active) cells
 * `highlight_selected_word.delay` - Wait time (in milliseconds) before
   highlighting the matches
 * `highlight_selected_word.words_only` - If true, only highlight matches if the

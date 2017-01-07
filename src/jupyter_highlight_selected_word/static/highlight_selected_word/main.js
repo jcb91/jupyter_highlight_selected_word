@@ -1,32 +1,20 @@
 /**
- * Enable highlighting of matching words in a given editor.
+ * Enable highlighting of matching words in cells' CodeMirror editors.
  *
- * This extension enables the CodeMirror feature `highlightSelectionMatches`.
- *
- * Docs for CM options adapted from codemirror/addon/search/match-highlighter.js:
- *
- *  minChars:  the minimum number of characters that must be selected for the
- *             highlighting behavior to occur.
- *     style:  the token style to apply to the matches. This will be prefixed
- *             by "cm-" to create an actual CSS class name.
- * wordsOnly:  if true, the matches will be highlighted only if the selected
- *             text is a word.
- * showToken:  when enabled, will cause the current token to be highlighted
- *             when nothing is selected.
- *     delay:  used to specify how much time to wait, in milliseconds, before
- *             highlighting the matches.
+ * This extension was adapted from the CodeMirror addon
+ * codemirror/addon/search/match-highlighter.js
  */
 
 define(function (require, exports, module) {
 	'use strict';
 
+	var $ = require('jquery');
 	var Jupyter = require('base/js/namespace');
 	var Cell = require('notebook/js/cell').Cell;
 	var CodeCell = require('notebook/js/codecell').CodeCell;
 	var ConfigSection = require('services/config').ConfigSection;
 
-	var codemirror = require('codemirror/lib/codemirror');
-	var highlighter = require('codemirror/addon/search/match-highlighter');
+	var CodeMirror = require('codemirror/lib/codemirror');
 
 	var log_prefix = '[' + module.id.split('/').slice(0, -1).join('/') + ']';
 	var menu_toggle_class = 'highlight_selected_word_toggle';
@@ -34,6 +22,7 @@ define(function (require, exports, module) {
 	// Parameters (potentially) stored in server config.
 	// This object gets updated on config load.
 	var params = {
+		highlight_across_all_cells: true,
 		enable_on_load : true,
 		code_cells_only: false,
 		delay: 100,
@@ -41,7 +30,191 @@ define(function (require, exports, module) {
 		min_chars: 2,
 		show_token: '\\w',
 		highlight_color: '#90EE90',
+		highlight_color_blurred: '#BBFFBB',
+		highlight_style: 'matchhighlight',
+		trim: true,
 	};
+
+	/**
+	 *  the codemirror matchHighlighter has a separate state object for each cm
+	 *  instance, but since our state is global over all cells' editors, we can
+	 *  use a single object for simplicity, and don't need to store options
+	 *  inside the state, since we have closure-level access to the params
+	 *  object above.
+	 */
+	var globalState = {
+		active: false,
+		timeout: null, // only want one timeout
+		overlay: null, // one overlay suffices, as all cells use the same one
+	};
+
+	// define a CodeMirror option for highlighting matches in all cells
+	CodeMirror.defineOption("highlightSelectionMatchesInJupyterCells", false, function (cm, val, old) {
+		if (old && old != CodeMirror.Init) {
+			globalState.active = false;
+			if (globalState.overlay) {
+				get_relevant_cells().forEach(function (cell, idx, array) {
+					cell.code_mirror.removeOverlay(globalState.overlay);
+				});
+			}
+			globalState.overlay = null;
+			clearTimeout(globalState.timeout);
+			globalState.timeout = null;
+			cm.off("cursorActivity", callbackCursorActivity);
+			cm.off("focus", callbackOnFocus);
+		}
+		if (val) {
+			if (cm.hasFocus()) {
+				globalState.active = true;
+				highlightMatchesInAllRelevantCells(cm);
+			}
+			else {
+				cm.on("focus", callbackOnFocus);
+			}
+			cm.on("cursorActivity", callbackCursorActivity);
+		}
+	});
+
+	/**
+	 *  The functions callbackCursorActivity, callbackOnFocus and
+	 *  scheduleHighlight are taken without major unmodified from cm's
+	 *  match-highlighter.
+	 *  The main difference is using our global state rather than
+	 *  match-highlighter's per-cm state, and a different highlighting function
+	 *  is scheduled.
+	 */
+	function callbackCursorActivity (cm) {
+		if (globalState.active || cm.hasFocus()) {
+			scheduleHighlight(cm);
+		}
+	}
+
+	function callbackOnFocus (cm) {
+		// unlike cm match-highlighter, we *do* want to schedule a highight on
+		// focussing the editor
+		globalState.active = true;
+		scheduleHighlight(cm);
+	}
+
+	function scheduleHighlight (cm) {
+		clearTimeout(globalState.timeout);
+		globalState.timeout = setTimeout(function () { highlightMatchesInAllRelevantCells(cm); }, params.delay);
+	}
+
+	/**
+	 *  Adapted from cm match-highlighter's highlightMatches, but adapted to
+	 *  use our global state and parameters, plus work either for only the
+	 *  current editor, or multiple cells' editors.
+	 */
+	function highlightMatchesInAllRelevantCells (cm) {
+		var newOverlay = null;
+
+		if (!cm.somethingSelected() && params.show_token) {
+			var re = params.show_token === true ? /[\w$]/ : params.show_token;
+			var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+			while (start && re.test(line.charAt(start - 1))) {
+				--start;
+			}
+			while (end < line.length && re.test(line.charAt(end))) {
+				++end;
+			}
+			if (start < end) {
+				newOverlay = makeOverlay(line.slice(start, end), re, params.highlight_style);
+			}
+		}
+		else {
+			var from = cm.getCursor("from");
+			var to = cm.getCursor("to");
+			if (from.line == to.line) {
+				if (!params.words_only || isWord(cm, from, to)) {
+					var selection = cm.getRange(from, to);
+					if (params.trim) {
+						selection = selection.replace(/^\s+|\s+$/g, "");
+					}
+					if (selection.length >= params.min_chars) {
+						newOverlay = makeOverlay(selection, false, params.highlight_style);
+					}
+				}
+			}
+		}
+
+		var cells = params.highlight_across_all_cells ? get_relevant_cells() : [
+			$(cm.getWrapperElement()).closest('.cell').data('cell')
+		];
+		var oldOverlay = globalState.overlay; // cached for later function
+		globalState.overlay = newOverlay;
+		cells.forEach(function (cell, idx, array) {
+			// cm.operation to delay updating DOM until all work is done
+			cell.code_mirror.operation(function () {
+				cell.code_mirror.removeOverlay(oldOverlay);
+				if (newOverlay) {
+					cell.code_mirror.addOverlay(newOverlay);
+				}
+			});
+		});
+	}
+
+	/**
+	 *  isWord, boundariesAround and makeOverlay come pretty much directly from
+	 *  Codemirror/addon/search/matchHighlighter
+	 *  since they don't use state or config values.
+	 */
+	function isWord (cm, from, to) {
+		var str = cm.getRange(from, to);
+		if (str.match(/^\w+$/) !== null) {
+			var pos, chr;
+			if (from.ch > 0) {
+				pos = {line: from.line, ch: from.ch - 1};
+				chr = cm.getRange(pos, from);
+				if (chr.match(/\W/) === null) {
+					return false;
+				}
+			}
+			if (to.ch < cm.getLine(from.line).length) {
+				pos = {line: to.line, ch: to.ch + 1};
+				chr = cm.getRange(to, pos);
+				if (chr.match(/\W/) === null) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	function boundariesAround (stream, re) {
+		return (!stream.start || !re.test(stream.string.charAt(stream.start - 1))) &&
+		  (stream.pos == stream.string.length || !re.test(stream.string.charAt(stream.pos)));
+	}
+	function makeOverlay (query, hasBoundary, style) {
+		return {
+			token: function (stream) {
+				if (stream.match(query) &&
+						(!hasBoundary || boundariesAround(stream, hasBoundary))) {
+					return style;
+				}
+				stream.next();
+				if (!stream.skipTo(query.charAt(0))) {
+					stream.skipToEnd();
+				}
+			}
+		};
+	}
+
+	/**
+	 *  Return an array of cells to which match highlighting is relevant,
+	 *  dependent on the code_cells_only parameter
+	 */
+	function get_relevant_cells () {
+		var cells = Jupyter.notebook.get_cells();
+		var relevant_cells = [];
+		for (var ii=0; ii<cells.length; ii++) {
+			var cell = cells[ii];
+			if (!params.code_cells_only || cell instanceof CodeCell) {
+				relevant_cells.push(cell);
+			}
+		}
+		return relevant_cells;
+	}
 
 	function add_menu_item () {
 		if ($('#view_menu').find('.' + menu_toggle_class).length < 1) {
@@ -65,21 +238,12 @@ define(function (require, exports, module) {
 	function toggle_highlight_selected (set_on) {
 		set_on = (set_on !== undefined) ? set_on : (params.enable_on_load = !params.enable_on_load);
 
-		var new_opts = set_on ? {
-			delay: params.delay,
-			wordsOnly: params.words_only,
-			minChars: params.min_chars,
-			showToken: new RegExp(params.show_token),
-		} : false;
-
 		// Change defaults for new cells:
-		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatches = new_opts;
+		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = set_on;
 
 		// And change any existing cells:
-		Jupyter.notebook.get_cells().forEach(function (cell, idx, array) {
-			if (!params.code_cells_only || cell instanceof CodeCell) {
-				cell.code_mirror.setOption('highlightSelectionMatches', new_opts);
-			}
+		get_relevant_cells().forEach(function (cell, idx, array) {
+			cell.code_mirror.setOption('highlightSelectionMatchesInJupyterCells', set_on);
 		});
 		// update menu class
 		$('.' + menu_toggle_class + ' > .fa').toggleClass('fa-check', set_on);
@@ -128,12 +292,18 @@ define(function (require, exports, module) {
 		new ConfigSection('notebook', {base_url : Jupyter.notebook.base_url})
 			.load()
 			.then(function (conf_data) {
-				$.extend(true, params, conf_data.highlight_selected_word); // update params
+				$.extend(true, params, conf_data.highlight_selected_word);
+				params.show_token = params.show_token ? new RegExp(params.show_token): false;
 
 				// alter css according to config
 				alter_css(
 					$stylesheet,
-					/^\.CodeMirror-focused\s*\.cm-matchhighlight\b/,
+					/^\.notebook_app\.edit_mode\s+\.cm-matchhighlight\s*[,\{]/,
+					{ backgroundColor: params.highlight_color_blurred }
+				);
+				alter_css(
+					$stylesheet,
+					/^\.notebook_app\s+\.CodeMirror-focused\s+.cm-matchhighlight\s*[,\{]/,
 					{ backgroundColor: params.highlight_color }
 				);
 
