@@ -16,6 +16,11 @@ define(function (require, exports, module) {
 
 	var CodeMirror = require('codemirror/lib/codemirror');
 
+	// The mark-selection addon is need to ensure that the highlighting styles
+	// are *not* applied to the actual selection, as otherwise it can become
+	// difficult to see which is selected vs just highlighted.
+	require('codemirror/addon/selection/mark-selection');
+
 	var mod_name = 'highlight_selected_word';
 	var log_prefix = '[' + mod_name + ']';
 	var menu_toggle_class = 'highlight_selected_word_toggle';
@@ -257,6 +262,7 @@ define(function (require, exports, module) {
 		// And change any existing cells:
 		get_relevant_cells().forEach(function (cell, idx, array) {
 			cell.code_mirror.setOption('highlightSelectionMatchesInJupyterCells', set_on);
+			cell.code_mirror.setOption('styleSelectedText', set_on);
 		});
 		// update menu class
 		$('.' + menu_toggle_class + ' > .fa').toggleClass('fa-check', set_on);
@@ -317,12 +323,12 @@ define(function (require, exports, module) {
 				// alter css according to config
 				alter_css(
 					$stylesheet,
-					/^\.notebook_app\.edit_mode\s+\.cm-matchhighlight\s*[,\{]/,
+					/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
 					{ backgroundColor: params.highlight_color_blurred }
 				);
 				alter_css(
 					$stylesheet,
-					/^\.notebook_app\s+\.CodeMirror-focused\s+.cm-matchhighlight\s*[,\{]/,
+					/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
 					{ backgroundColor: params.highlight_color }
 				);
 
