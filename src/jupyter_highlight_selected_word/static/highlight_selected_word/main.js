@@ -322,6 +322,10 @@ define(function (require, exports, module) {
 		Jupyter.notebook.config.loaded
 		.then(function () {
 				$.extend(true, params, Jupyter.notebook.config.data.highlight_selected_word);
+		}, function on_error (reason) {
+			console.warn(log_prefix, 'error loading config:', reason);
+		})
+		.then(function () {
 				params.show_token = params.show_token ? new RegExp(params.show_token): false;
 
 				// alter css according to config
