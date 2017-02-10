@@ -336,7 +336,9 @@ define(function (require, exports, module) {
 				toggle_highlight_selected(params.enable_on_load);
 		})
 		.then(register_new_actions)
-		.then(add_menu_item);
+		.then(add_menu_item)
+		// finally log any error we encountered
+		.catch(function on_error (reason) { console.warn(log_prefix, 'error loading:', reason); });
 	}
 
 	return {
