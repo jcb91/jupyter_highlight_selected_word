@@ -16,7 +16,8 @@ define(function (require, exports, module) {
 
 	var CodeMirror = require('codemirror/lib/codemirror');
 
-	var log_prefix = '[' + module.id.split('/').slice(0, -1).join('/') + ']';
+	var mod_name = 'highlight_selected_word';
+	var log_prefix = '[' + mod_name + ']';
 	var menu_toggle_class = 'highlight_selected_word_toggle';
 
 	// Parameters (potentially) stored in server config.
