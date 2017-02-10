@@ -287,13 +287,10 @@ define(function (require, exports, module) {
 			})
 			.appendTo('head');
 
-		add_menu_item();
-
 		// load config & toggle on/off
-		new ConfigSection('notebook', {base_url : Jupyter.notebook.base_url})
-			.load()
-			.then(function (conf_data) {
-				$.extend(true, params, conf_data.highlight_selected_word);
+		Jupyter.notebook.config.loaded
+		.then(function () {
+				$.extend(true, params, Jupyter.notebook.config.data.highlight_selected_word);
 				params.show_token = params.show_token ? new RegExp(params.show_token): false;
 
 				// alter css according to config
@@ -310,7 +307,8 @@ define(function (require, exports, module) {
 
 				// set highlight on/off
 				toggle_highlight_selected(params.enable_on_load);
-			});
+		})
+		.then(add_menu_item);
 	}
 
 	return {
