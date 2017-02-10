@@ -237,7 +237,12 @@ define(function (require, exports, module) {
 	}
 
 	function toggle_highlight_selected (set_on) {
-		set_on = (set_on !== undefined) ? set_on : (params.enable_on_load = !params.enable_on_load);
+		set_on = (set_on !== undefined) ? set_on : !params.enable_on_load;
+		// update config to make changes persistent
+		if (set_on !== params.enable_on_load) {
+			params.enable_on_load = set_on;
+			Jupyter.notebook.config.update({highlight_selected_word: {enable_on_load: set_on}});
+		}
 
 		// Change defaults for new cells:
 		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = set_on;
