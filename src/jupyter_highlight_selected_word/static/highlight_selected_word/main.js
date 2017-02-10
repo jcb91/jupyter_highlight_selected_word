@@ -279,7 +279,8 @@ define(function (require, exports, module) {
 		}, 'toggle', mod_name);
 	}
 
-	function alter_css ($ownerNode, selectorTextRegexp, style) {
+	function alter_css ($ownerNode, selectorTextRegexp, style, retries) {
+		retries = retries !== undefined ? retries : 10;
 		var ii;
 		var stylesheet;
 		for (ii = 0; ii < document.styleSheets.length; ii++) {
@@ -289,6 +290,11 @@ define(function (require, exports, module) {
 			}
 		}
 		if (stylesheet === undefined) {
+			if (retries > 0) {
+				return setTimeout(function () {
+					alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
+				}, 1000);
+			}
 			console.warn("Couldn't find any stylesheets owned by", $ownerNode);
 			return;
 		}
