@@ -34,6 +34,13 @@ define(function (require, exports, module) {
 		highlight_color_blurred: '#BBFFBB',
 		highlight_style: 'matchhighlight',
 		trim: true,
+		use_toggle_hotkey: false,
+		toggle_hotkey: 'alt-h',
+	};
+
+	// these are set on registering the action(s)
+	var action_names = {
+		toggle: '',
 	};
 
 	/**
@@ -257,6 +264,15 @@ define(function (require, exports, module) {
 		return set_on;
 	}
 
+	function register_new_actions () {
+		action_names.toggle = Jupyter.keyboard_manager.actions.register({
+			handler : function (env) { toggle_highlight_selected(); },
+			help : "Toggle highlighting of selected word",
+			icon : 'fa-language',
+			help_index: 'c1'
+		}, 'toggle', mod_name);
+	}
+
 	function alter_css ($ownerNode, selectorTextRegexp, style) {
 		var ii;
 		var stylesheet;
@@ -313,6 +329,7 @@ define(function (require, exports, module) {
 				// set highlight on/off
 				toggle_highlight_selected(params.enable_on_load);
 		})
+		.then(register_new_actions)
 		.then(add_menu_item);
 	}
 
