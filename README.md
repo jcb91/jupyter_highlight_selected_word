@@ -99,6 +99,11 @@ The available options are:
   be selected for the highlighting behavior to occur
 * `highlight_selected_word.show_token` - Token (regex) to highlight when
   nothing is selected
+* `highlight_selected_word.use_toggle_hotkey` - Bind the
+  `highlight_selected_word.toggle` action to a hotkey. Defaults to `false`.
+* `highlight_selected_word.toggle_hotkey` - Which hotkey to bind to the
+  `highlight_selected_word.toggle` action (if set to use, see item above).
+  Defaults to `alt-h`
 
 For example, to set the delay to half a second, and limit highlighting to code
 cells, we can use the following python snippet:
