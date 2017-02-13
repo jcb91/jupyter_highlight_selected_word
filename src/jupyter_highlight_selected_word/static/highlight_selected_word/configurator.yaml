@@ -57,3 +57,16 @@ Parameters:
   description: |
     Token (regex) to highlight when nothing is selected. If blank, nothing is
     highlighted when nothing is selected.
+
+- name: highlight_selected_word.use_toggle_hotkey
+  input_type: checkbox
+  default: false
+  description: |
+    Bind the highlight_selected_word:toggle action to a hotkey
+
+- name: highlight_selected_word.toggle_hotkey
+  input_type: hotkey
+  default: 'alt-h'
+  description: |
+    Hotkey to bind to the highlight_selected_word:toggle action (if selected
+    for use, above)

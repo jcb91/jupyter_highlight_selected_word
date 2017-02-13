@@ -16,7 +16,13 @@ define(function (require, exports, module) {
 
 	var CodeMirror = require('codemirror/lib/codemirror');
 
-	var log_prefix = '[' + module.id.split('/').slice(0, -1).join('/') + ']';
+	// The mark-selection addon is need to ensure that the highlighting styles
+	// are *not* applied to the actual selection, as otherwise it can become
+	// difficult to see which is selected vs just highlighted.
+	require('codemirror/addon/selection/mark-selection');
+
+	var mod_name = 'highlight_selected_word';
+	var log_prefix = '[' + mod_name + ']';
 	var menu_toggle_class = 'highlight_selected_word_toggle';
 
 	// Parameters (potentially) stored in server config.
@@ -33,6 +39,13 @@ define(function (require, exports, module) {
 		highlight_color_blurred: '#BBFFBB',
 		highlight_style: 'matchhighlight',
 		trim: true,
+		use_toggle_hotkey: false,
+		toggle_hotkey: 'alt-h',
+	};
+
+	// these are set on registering the action(s)
+	var action_names = {
+		toggle: '',
 	};
 
 	/**
@@ -236,7 +249,12 @@ define(function (require, exports, module) {
 	}
 
 	function toggle_highlight_selected (set_on) {
-		set_on = (set_on !== undefined) ? set_on : (params.enable_on_load = !params.enable_on_load);
+		set_on = (set_on !== undefined) ? set_on : !params.enable_on_load;
+		// update config to make changes persistent
+		if (set_on !== params.enable_on_load) {
+			params.enable_on_load = set_on;
+			Jupyter.notebook.config.update({highlight_selected_word: {enable_on_load: set_on}});
+		}
 
 		// Change defaults for new cells:
 		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = set_on;
@@ -244,6 +262,7 @@ define(function (require, exports, module) {
 		// And change any existing cells:
 		get_relevant_cells().forEach(function (cell, idx, array) {
 			cell.code_mirror.setOption('highlightSelectionMatchesInJupyterCells', set_on);
+			cell.code_mirror.setOption('styleSelectedText', set_on);
 		});
 		// update menu class
 		$('.' + menu_toggle_class + ' > .fa').toggleClass('fa-check', set_on);
@@ -251,7 +270,17 @@ define(function (require, exports, module) {
 		return set_on;
 	}
 
-	function alter_css ($ownerNode, selectorTextRegexp, style) {
+	function register_new_actions () {
+		action_names.toggle = Jupyter.keyboard_manager.actions.register({
+			handler : function (env) { toggle_highlight_selected(); },
+			help : "Toggle highlighting of selected word",
+			icon : 'fa-language',
+			help_index: 'c1'
+		}, 'toggle', mod_name);
+	}
+
+	function alter_css ($ownerNode, selectorTextRegexp, style, retries) {
+		retries = retries !== undefined ? retries : 10;
 		var ii;
 		var stylesheet;
 		for (ii = 0; ii < document.styleSheets.length; ii++) {
@@ -261,6 +290,11 @@ define(function (require, exports, module) {
 			}
 		}
 		if (stylesheet === undefined) {
+			if (retries > 0) {
+				return setTimeout(function () {
+					alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
+				}, 1000);
+			}
 			console.warn("Couldn't find any stylesheets owned by", $ownerNode);
 			return;
 		}
@@ -286,30 +320,38 @@ define(function (require, exports, module) {
 			})
 			.appendTo('head');
 
+		// add menu item, as we need it to exist for later
+		// toggle_highlight_selected call to set its icon status
 		add_menu_item();
 
 		// load config & toggle on/off
-		new ConfigSection('notebook', {base_url : Jupyter.notebook.base_url})
-			.load()
-			.then(function (conf_data) {
-				$.extend(true, params, conf_data.highlight_selected_word);
+		Jupyter.notebook.config.loaded
+		.then(function () {
+				$.extend(true, params, Jupyter.notebook.config.data.highlight_selected_word);
+		}, function on_error (reason) {
+			console.warn(log_prefix, 'error loading config:', reason);
+		})
+		.then(function () {
 				params.show_token = params.show_token ? new RegExp(params.show_token): false;
 
 				// alter css according to config
 				alter_css(
 					$stylesheet,
-					/^\.notebook_app\.edit_mode\s+\.cm-matchhighlight\s*[,\{]/,
+					/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
 					{ backgroundColor: params.highlight_color_blurred }
 				);
 				alter_css(
 					$stylesheet,
-					/^\.notebook_app\s+\.CodeMirror-focused\s+.cm-matchhighlight\s*[,\{]/,
+					/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
 					{ backgroundColor: params.highlight_color }
 				);
 
 				// set highlight on/off
 				toggle_highlight_selected(params.enable_on_load);
-			});
+		})
+		.then(register_new_actions)
+		// finally log any error we encountered
+		.catch(function on_error (reason) { console.warn(log_prefix, 'error loading:', reason); });
 	}
 
 	return {
