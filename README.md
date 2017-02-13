@@ -10,14 +10,14 @@ Highlight selected word
 
 
 This nbextension highlights all instances of the selected word in either the
-current cell's editor, or in any cell in the notebook.
+current cell's editor, or in all cells in the notebook.
 It is based on the CodeMirror addon
 [Match Highlighter](https://codemirror.net/demo/matchhighlighter.html),
 but now uses its own codebase in order to permit matching across multiple
 editors.
 
-There are a few configurable options, all of which sit under the config key
-`highlight_selected_word` in the `notebook` config section.
+There are a few configurable [options](#Options), all of which sit under the
+config key `highlight_selected_word` in the `notebook` config section.
 
 
 Installation
@@ -88,7 +88,7 @@ The available options are:
 * `highlight_selected_word.code_cells_only` - Only apply highlights to editors
   for Code cells, not, for example, Markdown or Raw cells
 * `highlight_selected_word.highlight_color` - Color used to highlight matching
-  words in the focussed (active) cell
+  words in the focused (active) cell
 * `highlight_selected_word.highlight_color_blurred` - Color used to highlight
   matching words in blurred (non-active) cells
 * `highlight_selected_word.delay` - Wait time (in milliseconds) before
@@ -99,8 +99,13 @@ The available options are:
   be selected for the highlighting behavior to occur
 * `highlight_selected_word.show_token` - Token (regex) to highlight when
   nothing is selected
+* `highlight_selected_word.use_toggle_hotkey` - Bind the
+  `highlight_selected_word.toggle` action to a hotkey. Defaults to `false`.
+* `highlight_selected_word.toggle_hotkey` - Which hotkey to bind to the
+  `highlight_selected_word.toggle` action (if set to use, see item above).
+  Defaults to `alt-h`
 
-For example, to set the delay to half a second, and limit higlighting to code
+For example, to set the delay to half a second, and limit highlighting to code
 cells, we can use the following python snippet:
 
 ```python
@@ -111,6 +116,31 @@ cm.update('notebook', {'highlight_selected_word': {
     'code_cells_only': True,
 }})
 ```
+
+
+Changes
+-------
+
+### 0.0.8
+
+ * Prevent highlighting the currently-selected text, to make it clearer where
+   the cursor is
+ * Make highlighting on/off state persistent by writing any changes to config
+ * New jupyter action to toggle highlighting on/off state
+ * New optional hotkey to toggle highlighting on/off state
+ * Readme & docs updates
+
+### 0.0.7
+
+ * Enable highlighting across all cells, not just the currently-active editor
+
+### 0.0.6
+
+ * Readme updates
+
+### 0.0.5
+
+* added conda-forge recipe
 
 
 Feedback
