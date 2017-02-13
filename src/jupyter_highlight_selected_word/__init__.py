@@ -3,7 +3,7 @@
 
 import os.path
 
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 
 def _jupyter_nbextension_paths():
