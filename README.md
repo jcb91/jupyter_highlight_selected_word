@@ -16,8 +16,8 @@ It is based on the CodeMirror addon
 but now uses its own codebase in order to permit matching across multiple
 editors.
 
-There are a few configurable options, all of which sit under the config key
-`highlight_selected_word` in the `notebook` config section.
+There are a few configurable [options](#Options), all of which sit under the
+config key `highlight_selected_word` in the `notebook` config section.
 
 
 Installation
@@ -116,6 +116,31 @@ cm.update('notebook', {'highlight_selected_word': {
     'code_cells_only': True,
 }})
 ```
+
+
+Changes
+-------
+
+### 0.0.8
+
+ * Prevent highlighting the currently-selected text, to make it clearer where
+   the cursor is
+ * Make highlighting on/off state persistent by writing any changes to config
+ * New jupyter action to toggle highlighting on/off state
+ * New optional hotkey to toggle highlighting on/off state
+ * Readme & docs updates
+
+### 0.0.7
+
+ * Enable highlighting across all cells, not just the currently-active editor
+
+### 0.0.6
+
+ * Readme updates
+
+### 0.0.5
+
+* added conda-forge recipe
 
 
 Feedback

@@ -12,8 +12,8 @@ It is based on the CodeMirror addon
 but now uses its own codebase in order to permit matching across multiple
 editors.
 
-There are a few configurable options, all of which sit under the config key
-`highlight_selected_word` in the `notebook` config section.
+There are a few configurable [options](#Options), all of which sit under the
+config key `highlight_selected_word` in the `notebook` config section.
 
 
 Options
