@@ -32,8 +32,9 @@ define(function (require, exports, module) {
 		code_cells_only: false,
 		delay: 100,
 		words_only: false,
+		highlight_only_whole_words: true,
 		min_chars: 2,
-		show_token: '\\w',
+		show_token: '[\\w$]',
 		highlight_color: '#90EE90',
 		highlight_color_blurred: '#BBFFBB',
 		highlight_style: 'matchhighlight',
@@ -144,7 +145,8 @@ define(function (require, exports, module) {
 						selection = selection.replace(/^\s+|\s+$/g, "");
 					}
 					if (selection.length >= params.min_chars) {
-						newOverlay = makeOverlay(selection, false, params.highlight_style);
+						var hasBoundary = params.highlight_only_whole_words ? (re instanceof RegExp ? re : /[\w$]/) : false;
+						newOverlay = makeOverlay(selection, hasBoundary, params.highlight_style);
 					}
 				}
 			}

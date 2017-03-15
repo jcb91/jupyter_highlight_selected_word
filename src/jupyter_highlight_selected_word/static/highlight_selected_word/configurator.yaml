@@ -42,6 +42,21 @@ Parameters:
   default: false
   description: Only highlight matches if the selected text is a word
 
+- name: highlight_selected_word.highlight_only_whole_words
+  input_type: checkbox
+  default: true
+  description: |
+    Only highlight matches when they are surrounded by non-word characters, as
+    determined by the token below (if set), or the default regex '[\w$]'.
+
+- name: highlight_selected_word.show_token
+  input_type: text
+  default: '[\w$]'  # single-quote strings in yaml are like python raw strings
+  description: |
+    Token (regex) to identify word characters, used to determine what to
+    highlight when nothing is selected. If blank, nothing is highlighted when
+    nothing is selected.
+
 - name: highlight_selected_word.min_chars
   input_type: number
   default: 2
@@ -50,13 +65,6 @@ Parameters:
   description: |
     Minimum number of characters that must be selected for the highlighting
     behavior to occur
-
-- name: highlight_selected_word.show_token
-  input_type: text
-  default: '\w'
-  description: |
-    Token (regex) to highlight when nothing is selected. If blank, nothing is
-    highlighted when nothing is selected.
 
 - name: highlight_selected_word.use_toggle_hotkey
   input_type: checkbox
