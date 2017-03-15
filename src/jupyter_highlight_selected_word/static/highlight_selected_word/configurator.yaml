@@ -40,7 +40,7 @@ Parameters:
 - name: highlight_selected_word.words_only
   input_type: checkbox
   default: false
-  description: Only highlight matches if the selected text is a word
+  description: Only highlight matches if the selected text is a whole word
 
 - name: highlight_selected_word.highlight_only_whole_words
   input_type: checkbox
@@ -64,7 +64,7 @@ Parameters:
   step: 1
   description: |
     Minimum number of characters that must be selected for the highlighting
-    behavior to occur
+    to occur (assuming no token is set for use when nothing is selected)
 
 - name: highlight_selected_word.use_toggle_hotkey
   input_type: checkbox
