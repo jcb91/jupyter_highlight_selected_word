@@ -12,7 +12,6 @@ define(function (require, exports, module) {
 	var Jupyter = require('base/js/namespace');
 	var Cell = require('notebook/js/cell').Cell;
 	var CodeCell = require('notebook/js/codecell').CodeCell;
-	var ConfigSection = require('services/config').ConfigSection;
 
 	var CodeMirror = require('codemirror/lib/codemirror');
 
@@ -122,9 +121,10 @@ define(function (require, exports, module) {
 	function highlightMatchesInAllRelevantCells (cm) {
 		var newOverlay = null;
 
+		var re = params.show_token === true ? /[\w$]/ : params.show_token;
+		var from = cm.getCursor('from');
 		if (!cm.somethingSelected() && params.show_token) {
-			var re = params.show_token === true ? /[\w$]/ : params.show_token;
-			var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+			var line = cm.getLine(from.line), start = from.ch, end = start;
 			while (start && re.test(line.charAt(start - 1))) {
 				--start;
 			}
@@ -136,7 +136,6 @@ define(function (require, exports, module) {
 			}
 		}
 		else {
-			var from = cm.getCursor("from");
 			var to = cm.getCursor("to");
 			if (from.line == to.line) {
 				if (!params.words_only || isWord(cm, from, to)) {
