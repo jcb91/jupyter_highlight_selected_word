@@ -1,9 +1,14 @@
-# explicit includes
-include package.json
+# explicit includes
 include LICENSE.txt
 include README.md
+include tox.ini
+include .bumpversion.cfg
 
+# directory includes
 graft src
+
+# directory excludes
+prune conda.recipe
 
 # Patterns to exclude from any directory
 global-exclude *~
