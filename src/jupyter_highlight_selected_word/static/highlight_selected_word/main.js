@@ -12,7 +12,6 @@ define(function (require, exports, module) {
 	var Jupyter = require('base/js/namespace');
 	var Cell = require('notebook/js/cell').Cell;
 	var CodeCell = require('notebook/js/codecell').CodeCell;
-	var ConfigSection = require('services/config').ConfigSection;
 
 	var CodeMirror = require('codemirror/lib/codemirror');
 
@@ -33,8 +32,9 @@ define(function (require, exports, module) {
 		code_cells_only: false,
 		delay: 100,
 		words_only: false,
+		highlight_only_whole_words: true,
 		min_chars: 2,
-		show_token: '\\w',
+		show_token: '[\\w$]',
 		highlight_color: '#90EE90',
 		highlight_color_blurred: '#BBFFBB',
 		highlight_style: 'matchhighlight',
@@ -122,9 +122,10 @@ define(function (require, exports, module) {
 	function highlightMatchesInAllRelevantCells (cm) {
 		var newOverlay = null;
 
+		var re = params.show_token === true ? /[\w$]/ : params.show_token;
+		var from = cm.getCursor('from');
 		if (!cm.somethingSelected() && params.show_token) {
-			var re = params.show_token === true ? /[\w$]/ : params.show_token;
-			var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+			var line = cm.getLine(from.line), start = from.ch, end = start;
 			while (start && re.test(line.charAt(start - 1))) {
 				--start;
 			}
@@ -136,7 +137,6 @@ define(function (require, exports, module) {
 			}
 		}
 		else {
-			var from = cm.getCursor("from");
 			var to = cm.getCursor("to");
 			if (from.line == to.line) {
 				if (!params.words_only || isWord(cm, from, to)) {
@@ -145,7 +145,8 @@ define(function (require, exports, module) {
 						selection = selection.replace(/^\s+|\s+$/g, "");
 					}
 					if (selection.length >= params.min_chars) {
-						newOverlay = makeOverlay(selection, false, params.highlight_style);
+						var hasBoundary = params.highlight_only_whole_words ? (re instanceof RegExp ? re : /[\w$]/) : false;
+						newOverlay = makeOverlay(selection, hasBoundary, params.highlight_style);
 					}
 				}
 			}

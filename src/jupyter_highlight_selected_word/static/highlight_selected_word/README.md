@@ -30,22 +30,39 @@ The available options are:
 * `highlight_selected_word.highlight_across_all_cells` - if `true`, (default)
   highlight matches across all cells. If `false`, only matches within the
   currently selected cell will be highlighted.
+
 * `highlight_selected_word.code_cells_only` - Only apply highlights to editors
   for Code cells, not, for example, Markdown or Raw cells
+
 * `highlight_selected_word.highlight_color` - Color used to highlight matching
   words in the focused (active) cell
+
 * `highlight_selected_word.highlight_color_blurred` - Color used to highlight
   matching words in blurred (non-active) cells
+
 * `highlight_selected_word.delay` - Wait time (in milliseconds) before
   highlighting the matches
+
 * `highlight_selected_word.words_only` - If true, only highlight matches if the
   selected text is a word
+
+* `highlight_selected_word.highlight_only_whole_words` - Only highlight matches
+  which are surrounded by non-word characters. This will use the token
+  `highlight_selected_word.show_token` to identify word characters, if it's
+  set, otherwise the regular expression `[\w$]` will be used.
+
+* `highlight_selected_word.show_token` - Token (regex) to identify word
+  characters, used to determine what to highlight when nothing is selected.
+  If blank, nothing is highlighted when nothing is selected.
+  This regex is also used to determine word boundaries for
+  `highlight_selected_word.highlight_only_whole_words`.
+
 * `highlight_selected_word.min_chars` - Minimum number of characters that must
   be selected for the highlighting behavior to occur
-* `highlight_selected_word.show_token` - Token (regex) to highlight when
-  nothing is selected
+
 * `highlight_selected_word.use_toggle_hotkey` - Bind the
   `highlight_selected_word.toggle` action to a hotkey. Defaults to `false`.
+
 * `highlight_selected_word.toggle_hotkey` - Which hotkey to bind to the
   `highlight_selected_word.toggle` action (if set to use, see item above).
   Defaults to `alt-h`
