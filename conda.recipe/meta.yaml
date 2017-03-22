@@ -31,9 +31,13 @@ test:
 
 about:
   summary: |
-      Jupyter nbextension which enables the CodeMirror addon "Match Highlighter",
-      which highlights all instances of the selected word in the current editor.
-  home: https://github.com/jfbercher/jupyter_latex_envs
+    Jupyter notebook extension that enables highlighting of all instances of
+    the currently-selected or cursor-adjecent word in either the current cell's
+    editor, or in the whole notebook.
+    Based on the  CodeMirror addon
+    https://codemirror.net/demo/matchhighlighter.html
+    extended to work across multiple editors.
+  home: https://github.com/jcb91/jupyter_highlight_selected_word
   license_file: LICENSE.txt
   license: BSD 3-clause
 

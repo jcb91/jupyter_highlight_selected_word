@@ -3,7 +3,7 @@
 	margin-right: -16px;
 }
 
-.notebook_app.edit_mode .CodeMirror:not(.CodeMirror-focused) .cm-matchhighlight,
+.notebook_app.edit_mode .CodeMirror:not(.CodeMirror-focused) .cm-matchhighlight:not(.CodeMirror-selectedtext),
 .notebook_app.edit_mode .CodeMirror:not(.CodeMirror-focused) .CodeMirror-selection-highlight-scrollbar {
 	background-color: #BBFFBB; /* this color gets overwritten by js anyway */
 }

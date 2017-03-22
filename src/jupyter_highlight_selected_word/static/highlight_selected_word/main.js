@@ -258,7 +258,8 @@ define(function (require, exports, module) {
 		}
 
 		// Change defaults for new cells:
-		(params.code_cells_only ? Cell : CodeCell).options_default.cm_config.highlightSelectionMatchesInJupyterCells = set_on;
+		var cm_conf = (params.code_cells_only ? Cell : CodeCell).options_default.cm_config;
+		cm_conf.highlightSelectionMatchesInJupyterCells = cm_conf.styleSelectedText = set_on;
 
 		// And change any existing cells:
 		get_relevant_cells().forEach(function (cell, idx, array) {
