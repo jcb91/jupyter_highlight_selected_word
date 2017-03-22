@@ -138,6 +138,12 @@ cm.update('notebook', {'highlight_selected_word': {
 Changes
 -------
 
+### 0.0.10
+
+ * Bugfix: ensure `styleSelectedText` CodeMirror option gets set in default
+   config for new cells
+ * Don't highlight selected text, even in edit mode (non-focussed cells)
+
 ### 0.0.9
 
  * Limit higlighting to whole words, from a suggestion by
