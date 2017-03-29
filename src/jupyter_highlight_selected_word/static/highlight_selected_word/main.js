@@ -221,7 +221,7 @@ define(function (require, exports, module) {
 	function get_relevant_cells () {
 		var cells = Jupyter.notebook.get_cells();
 		var relevant_cells = [];
-		for (var ii=0; ii<cells.length; ii++) {
+		for (var ii = 0; ii < cells.length; ii++) {
 			var cell = cells[ii];
 			if (!params.code_cells_only || cell instanceof CodeCell) {
 				relevant_cells.push(cell);
@@ -336,27 +336,28 @@ define(function (require, exports, module) {
 		// load config & toggle on/off
 		Jupyter.notebook.config.loaded
 		.then(function () {
-				$.extend(true, params, Jupyter.notebook.config.data.highlight_selected_word);
+			$.extend(true, params, Jupyter.notebook.config.data.highlight_selected_word);
 		}, function on_error (reason) {
 			console.warn(log_prefix, 'error loading config:', reason);
 		})
 		.then(function () {
-				params.show_token = params.show_token ? new RegExp(params.show_token): false;
+			params.show_token = params.show_token ? new RegExp(params.show_token) : false;
 
-				// alter css according to config
-				alter_css(
-					$stylesheet,
-					/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
-					{ backgroundColor: params.highlight_color_blurred }
-				);
-				alter_css(
-					$stylesheet,
-					/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
-					{ backgroundColor: params.highlight_color }
-				);
+			// alter css according to config
+			alter_css(
+				$stylesheet,
+				/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
+				{ backgroundColor: params.highlight_color_blurred }
+			);
+			alter_css(
+				$stylesheet,
+				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
+				{ backgroundColor: params.highlight_color }
+			);
 
-				// set highlight on/off
-				toggle_highlight_selected(params.enable_on_load);
+			// set highlight on/off
+			toggle_highlight_selected(params.enable_on_load);
+
 			register_new_actions();
 			bind_hotkeys();
 		})
