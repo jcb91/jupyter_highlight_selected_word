@@ -281,6 +281,13 @@ define(function (require, exports, module) {
 		}, 'toggle', mod_name);
 	}
 
+	function bind_hotkeys () {
+		if (params.use_toggle_hotkey && params.toggle_hotkey) {
+			Jupyter.keyboard_manager.command_shortcuts.add_shortcut(params.toggle_hotkey, action_names.toggle);
+			Jupyter.keyboard_manager.edit_shortcuts.add_shortcut(params.toggle_hotkey, action_names.toggle);
+		}
+	}
+
 	function alter_css ($ownerNode, selectorTextRegexp, style, retries) {
 		retries = retries !== undefined ? retries : 10;
 		var ii;
@@ -350,8 +357,9 @@ define(function (require, exports, module) {
 
 				// set highlight on/off
 				toggle_highlight_selected(params.enable_on_load);
+			register_new_actions();
+			bind_hotkeys();
 		})
-		.then(register_new_actions)
 		// finally log any error we encountered
 		.catch(function on_error (reason) { console.warn(log_prefix, 'error loading:', reason); });
 	}
