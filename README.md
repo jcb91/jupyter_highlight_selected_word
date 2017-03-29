@@ -138,6 +138,11 @@ cm.update('notebook', {'highlight_selected_word': {
 Changes
 -------
 
+### repo master
+
+  * Bugfix: hotkey was not being bound.
+  * Bugfix: apply codemirror default settings to correct cell types
+
 ### 0.0.10
 
  * Bugfix: ensure `styleSelectedText` CodeMirror option gets set in default
@@ -146,7 +151,7 @@ Changes
 
 ### 0.0.9
 
- * Limit higlighting to whole words, from a suggestion by
+ * Limit highlighting to whole words, from a suggestion by
    [@hiiwave](https://github.com/hiiwave).
    This is now the default behaviour, but the option is configurable
    to ignore this limitation, reverting to the previous behaviour.
