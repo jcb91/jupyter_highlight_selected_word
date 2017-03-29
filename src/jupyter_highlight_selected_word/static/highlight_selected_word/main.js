@@ -258,7 +258,7 @@ define(function (require, exports, module) {
 		}
 
 		// Change defaults for new cells:
-		var cm_conf = (params.code_cells_only ? Cell : CodeCell).options_default.cm_config;
+		var cm_conf = (params.code_cells_only ? CodeCell : Cell).options_default.cm_config;
 		cm_conf.highlightSelectionMatchesInJupyterCells = cm_conf.styleSelectedText = set_on;
 
 		// And change any existing cells:
