@@ -138,7 +138,7 @@ cm.update('notebook', {'highlight_selected_word': {
 Changes
 -------
 
-### repo master
+### 0.0.11
 
   * Bugfix: hotkey was not being bound.
   * Bugfix: apply codemirror default settings to correct cell types
