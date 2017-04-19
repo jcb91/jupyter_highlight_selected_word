@@ -30,6 +30,21 @@ Parameters:
   default: '#BBFFBB'
   description: Color used to highlight matching words in blurred (non-active) cells
 
+- name: highlight_selected_word.outlines_only
+  input_type: checkbox
+  default: false
+  description: |
+    Highlight words using just an outline, rather than the background color
+
+- name: highlight_selected_word.outline_width
+  input_type: number
+  default: 1
+  min: 0.5
+  step: 0.5
+  description: |
+    Width, in pixels, of the outline used to highlight words when the
+    outline-only setting is selected.
+
 - name: highlight_selected_word.delay
   input_type: number
   default: 100

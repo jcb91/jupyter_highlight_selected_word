@@ -41,6 +41,8 @@ define(function (require, exports, module) {
 		trim: true,
 		use_toggle_hotkey: false,
 		toggle_hotkey: 'alt-h',
+		outlines_only: false,
+		outline_width: 2,
 	};
 
 	// these are set on registering the action(s)
@@ -342,6 +344,9 @@ define(function (require, exports, module) {
 		})
 		.then(function () {
 			params.show_token = params.show_token ? new RegExp(params.show_token) : false;
+			if (params.outlines_only) {
+				params.highlight_style += '-outline'
+			}
 
 			// alter css according to config
 			alter_css(
@@ -353,6 +358,16 @@ define(function (require, exports, module) {
 				$stylesheet,
 				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
 				{ backgroundColor: params.highlight_color }
+			);
+			alter_css(
+				$stylesheet,
+				/^\.notebook_app\.edit_mode\s+\.CodeMirror\s+.cm-matchhighlight-outline/,
+				{ borderColor: params.highlight_color_blurred, outlineWidth: params.outline_width + 'px' }
+			);
+			alter_css(
+				$stylesheet,
+				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight-outline/,
+				{ borderColor: params.highlight_color }
 			);
 
 			// set highlight on/off
