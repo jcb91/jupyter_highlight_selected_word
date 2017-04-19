@@ -362,12 +362,12 @@ define(function (require, exports, module) {
 			alter_css(
 				$stylesheet,
 				/^\.notebook_app\.edit_mode\s+\.CodeMirror\s+.cm-matchhighlight-outline/,
-				{ borderColor: params.highlight_color_blurred, outlineWidth: params.outline_width + 'px' }
+				{ outlineColor: params.highlight_color_blurred, outlineWidth: params.outline_width + 'px' }
 			);
 			alter_css(
 				$stylesheet,
 				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight-outline/,
-				{ borderColor: params.highlight_color }
+				{ outlineColor: params.highlight_color }
 			);
 
 			// set highlight on/off
