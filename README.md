@@ -95,6 +95,15 @@ The available options are:
 * `highlight_selected_word.highlight_color_blurred` - Color used to highlight
   matching words in blurred (non-active) cells
 
+* `highlight_selected_word.outlines_only` - Highlight words using just an
+  outline, rather than the background color. In contrast to the default
+  background-color highlight, the outline-only is also applied to the
+  currently-selected word
+
+* `highlight_selected_word.outline_width` - Width, in pixels, of the outline
+  used to highlight words when the outline-only setting (above) is selected.
+  Defaults to 1.
+
 * `highlight_selected_word.delay` - Wait time (in milliseconds) before
   highlighting the matches
 
@@ -137,6 +146,11 @@ cm.update('notebook', {'highlight_selected_word': {
 
 Changes
 -------
+
+### repo master
+
+  * Add options to allow highlighting words using an outline, rather than the
+    background color.
 
 ### 0.0.11
 
