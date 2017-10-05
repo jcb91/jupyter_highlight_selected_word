@@ -1,10 +1,17 @@
 Type: Jupyter Notebook Extension
-Compatibility: 4.x
+Compatibility: 4.x, 5.x
 Name: Highlight selected word
 Main: main.js
 Description: Enables the CodeMirror addon "Match Highlighter"
 Link: README.md
 Parameters:
+
+- name: highlight_selected_word.enable_on_load
+  input_type: checkbox
+  default: true
+  description: |
+    Enable highlighting on loading the notebook interface.
+    The highlighting can also be toggled from the view menu
 
 - name: highlight_selected_word.highlight_across_all_cells
   input_type: checkbox
@@ -80,6 +87,12 @@ Parameters:
   description: |
     Minimum number of characters that must be selected for the highlighting
     to occur (assuming no token is set for use when nothing is selected)
+
+- name: highlight_selected_word.trim
+  input_type: checkbox
+  default: true
+  description: |
+    Trim whitespace from selection text before checking for minimum length
 
 - name: highlight_selected_word.use_toggle_hotkey
   input_type: checkbox
