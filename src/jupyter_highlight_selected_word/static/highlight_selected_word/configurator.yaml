@@ -106,3 +106,20 @@ Parameters:
   description: |
     Hotkey to bind to the highlight_selected_word:toggle action (if selected
     for use, above)
+
+- name: highlight_selected_word.only_cells_in_scroll
+  input_type: checkbox
+  default: true
+  description: |
+    Only apply highlights to editors which are visible in the scrolled view.
+    This may offer performance benefits for larger notebooks
+
+- name: highlight_selected_word.scroll_min_delay
+  input_type: number
+  default: 100
+  min: 0
+  step: 10
+  description: |
+    Minimum delay in ms between updating highlights on scrolling the notebook
+    (used only if limiting highlights to those in scrolled view, see above).
+    If set to zero, no update is done on scroll.
