@@ -223,7 +223,7 @@ define(function (require, exports, module) {
 	 * Returns true if part of elem is visible between viewtop & viewbot
 	 */
 	var is_in_view  = function (elem, viewtop, viewbot) {
-		var rect = el.getBoundingClientRect();
+		var rect = elem.getBoundingClientRect();
 		// hidden elements show height 0
 		return (rect.top < viewbot) && (rect.bottom > viewtop) && rect.height;
 	}
@@ -270,12 +270,12 @@ define(function (require, exports, module) {
 	var throttled_highlight = (function () {
 		var last, throttle_timeout;
 		return function throttled_highlight (cm) {
-			var now = Number(new Date);
+			var now = Number(new Date());
 			var do_it = function () {
-				last = Number(new Date);
+				last = Number(new Date());
 				highlightMatchesInAllRelevantCells(cm);
 			};
-			var remaining = last + threshhold - now;
+			var remaining = last + params.scroll_min_delay - now;
 			if (last && remaining > 0) {
 				clearTimeout(throttle_timeout);
 				throttle_timeout = setTimeout(do_it, remaining);
