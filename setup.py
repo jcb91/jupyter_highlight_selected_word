@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='jupyter_highlight_selected_word',
-    version='0.0.11',
+    version='0.1.0',
     description=(
         'Jupyter notebook extension that enables highlighting every instance '
         'of the current word in the notebook.'
