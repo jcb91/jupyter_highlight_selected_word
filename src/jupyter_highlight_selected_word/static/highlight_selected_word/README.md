@@ -76,6 +76,16 @@ The available options are:
   `highlight_selected_word.toggle` action (if set to use, see item above).
   Defaults to `alt-h`
 
+* `highlight_selected_word.only_cells_in_scroll` - Only apply highlights to
+  editors which are visible in the scrolled view. This may offer performance
+  benefits for larger notebooks, but may be annoying if you're doing a lot of
+  scrolling :/
+
+* `highlight_selected_word.scroll_min_delay` - Minimum delay in ms between
+  updating highlights on scrolling the notebook (used only if
+  `highlight_selected_word.only_cells_in_scroll` is `true`).
+  If set to zero, no update is done on scroll.
+
 For example, to set the delay to half a second, and limit highlighting to code
 cells, we can use the following python snippet:
 
