@@ -157,8 +157,9 @@ cm.update('notebook', {'highlight_selected_word': {
 Changes
 -------
 
-### repo master
+### 0.1.0
 
+  * update compatibility to include notebook 5
   * add options to limit highlighting to cells which are currently visible in
     the scrolled view, which may offer performance benefits.
   * Add options to allow highlighting words using an outline, rather than the
