@@ -5,20 +5,29 @@
  * codemirror/addon/search/match-highlighter.js
  */
 
-define(function (require, exports, module) {
-	'use strict';
-
-	var $ = require('jquery');
-	var Jupyter = require('base/js/namespace');
-	var Cell = require('notebook/js/cell').Cell;
-	var CodeCell = require('notebook/js/codecell').CodeCell;
-
-	var CodeMirror = require('codemirror/lib/codemirror');
-
+define([
+	'require',
+	'jquery',
+	'base/js/namespace',
+	'notebook/js/cell',
+	'notebook/js/codecell',
+	'codemirror/lib/codemirror',
 	// The mark-selection addon is need to ensure that the highlighting styles
 	// are *not* applied to the actual selection, as otherwise it can become
 	// difficult to see which is selected vs just highlighted.
-	require('codemirror/addon/selection/mark-selection');
+	'codemirror/addon/selection/mark-selection'
+], function (
+	requirejs,
+	$,
+	Jupyter,
+	cell,
+	codecell,
+	CodeMirror
+) {
+	'use strict';
+
+	var Cell = cell.Cell;
+	var CodeCell = codecell.CodeCell;
 
 	var mod_name = 'highlight_selected_word';
 	var log_prefix = '[' + mod_name + ']';
@@ -373,7 +382,7 @@ define(function (require, exports, module) {
 				id: 'highlight_selected_word_css',
 				rel: 'stylesheet',
 				type: 'text/css',
-				href: require.toUrl('./main.css')
+				href: requirejs.toUrl('./main.css')
 			})
 			.appendTo('head');
 
