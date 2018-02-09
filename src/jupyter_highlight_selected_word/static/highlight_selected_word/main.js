@@ -365,7 +365,18 @@ define([
 			return;
 		}
 		selectorTextRegexp = new RegExp(selectorTextRegexp);
-		for (ii = 0; ii < stylesheet.cssRules.length; ii++) {
+		// firefox can fail with an InvalidAccessError DOMException on this length check, see
+		// https://github.com/jcb91/jupyter_highlight_selected_word/issues/26
+		var numRules = 0;
+		try {
+			numRules = stylesheet.cssRules.length;
+		}
+		catch (err) {
+			return setTimeout(function () {
+				alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
+			}, 1000);
+		}
+		for (ii = 0; ii < numRules; ii++) {
 			if (selectorTextRegexp.test(stylesheet.cssRules[ii].selectorText)) {
 				$.extend(stylesheet.cssRules[ii].style, style);
 				return;
