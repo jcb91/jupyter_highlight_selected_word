@@ -54,6 +54,7 @@ define([
 		outline_width: 2,
 		only_cells_in_scroll: true,
 		scroll_min_delay: 100,
+		hide_selections_in_unfocussed: false,
 	};
 
 	// these are set on registering the action(s)
@@ -345,9 +346,9 @@ define([
 	}
 
 	function insert_css () {
-		$('<style type="text/css" id="highlight_selected_word_css">').appendTo('head').html([
-			// by default, matches have blurred color
-			'.edit_mode .CodeMirror :not(.CodeMirror-selectedtext).cm-matchhighlight {',
+		var css = [// in unselected cells, matches have blurred color
+			// in selected cells, we keep CodeMirror highlight for the actual selection to avoid confusion
+			'.edit_mode .unselected .CodeMirror .cm-matchhighlight {',
 			'	background-color: ' + params.highlight_color_blurred + ';',
 			'}',
 			
@@ -367,7 +368,19 @@ define([
 			'.edit_mode .CodeMirror.CodeMirror-focused .cm-matchhighlight-outline {',
 			'    outline-color: ' + params.highlight_color + ';',
 			'}'
-		].join('\n'));
+		].join('\n');
+
+		if (params.hide_selections_in_unfocussed) {
+			css += [
+				// in unselected cells, selections which are not matches should have no background
+				'.unselected .CodeMirror :not(.cm-matchhighlight).CodeMirror-selected,',
+				'.unselected .CodeMirror :not(.cm-matchhighlight).CodeMirror-selectedtext {',
+				'	background: initial;',
+				'}',
+			].join('\n');
+		}
+
+		$('<style type="text/css" id="highlight_selected_word_css">').appendTo('head').html(css);
 	}
 
 	function load_extension () {

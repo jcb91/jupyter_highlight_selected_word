@@ -123,3 +123,9 @@ Parameters:
     Minimum delay in ms between updating highlights on scrolling the notebook
     (used only if limiting highlights to those in scrolled view, see above).
     If set to zero, no update is done on scroll.
+
+- name: highlight_selected_word.hide_selections_in_unfocussed
+  input_type: checkbox
+  default: false
+  description: |
+    Hide any text selection in non-focussed cells (can be confused with match highlights).
