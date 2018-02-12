@@ -272,6 +272,7 @@ define([
 				.appendTo(menu_item);
 			$('<i/>')
 				.addClass('fa menu-icon pull-right')
+				.css({'margin-top': '-2px', 'margin-right': '-16px'})
 				.prependTo(menu_link);
 		}
 	}
@@ -345,58 +346,33 @@ define([
 		}
 	}
 
-	function alter_css ($ownerNode, selectorTextRegexp, style, retries) {
-		retries = retries !== undefined ? retries : 10;
-		var ii;
-		var stylesheet;
-		for (ii = 0; ii < document.styleSheets.length; ii++) {
-			if ($ownerNode.is(document.styleSheets[ii].ownerNode)) {
-				stylesheet = document.styleSheets[ii];
-				break;
-			}
-		}
-		if (stylesheet === undefined) {
-			if (retries > 0) {
-				return setTimeout(function () {
-					alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
-				}, 1000);
-			}
-			console.warn("Couldn't find any stylesheets owned by", $ownerNode);
-			return;
-		}
-		selectorTextRegexp = new RegExp(selectorTextRegexp);
-		// firefox can fail with an InvalidAccessError DOMException on this length check, see
-		// https://github.com/jcb91/jupyter_highlight_selected_word/issues/26
-		var numRules = 0;
-		try {
-			numRules = stylesheet.cssRules.length;
-		}
-		catch (err) {
-			return setTimeout(function () {
-				alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
-			}, 1000);
-		}
-		for (ii = 0; ii < numRules; ii++) {
-			if (selectorTextRegexp.test(stylesheet.cssRules[ii].selectorText)) {
-				$.extend(stylesheet.cssRules[ii].style, style);
-				return;
-			}
-		}
-		console.warn("Couldn't find any rule with a selector matching", selectorTextRegexp, 'in', $ownerNode);
+	function insert_css () {
+		$('<style type="text/css" id="highlight_selected_word_css">').appendTo('head').html([
+			// by default, matches have blurred color
+			'.edit_mode .CodeMirror :not(.CodeMirror-selectedtext).cm-matchhighlight {',
+			'	background-color: ' + params.highlight_color_blurred + ';',
+			'}',
+			
+			// in active cell, matches which are not the current selection have focussed color
+			'.edit_mode .CodeMirror.CodeMirror-focused :not(.CodeMirror-selectedtext).cm-matchhighlight {',
+			'    background-color: ' + params.highlight_color + ';',
+			'}',
+			
+			// in all cells, outline matches have blurred color
+			'.edit_mode .CodeMirror .cm-matchhighlight-outline {',
+			'	outline-style: solid;',
+			'	outline-width: ' + params.outline_width + 'px;',
+			'	outline-color: ' + params.highlight_color_blurred + ';',
+			'}',
+			
+			// in active cell, outline matches have focussed color
+			'.edit_mode .CodeMirror.CodeMirror-focused .cm-matchhighlight-outline {',
+			'    outline-color: ' + params.highlight_color + ';',
+			'}'
+		].join('\n'));
 	}
 
 	function load_extension () {
-
-		// Load css first
-		var $stylesheet = $('<link/>')
-			.attr({
-				id: 'highlight_selected_word_css',
-				rel: 'stylesheet',
-				type: 'text/css',
-				href: requirejs.toUrl('./main.css')
-			})
-			.appendTo('head');
-
 		// add menu item, as we need it to exist for later
 		// toggle_highlight_selected call to set its icon status
 		add_menu_item();
@@ -408,34 +384,12 @@ define([
 		}, function on_error (reason) {
 			console.warn(log_prefix, 'error loading config:', reason);
 		})
+		.then(insert_css)
 		.then(function () {
 			params.show_token = params.show_token ? new RegExp(params.show_token) : false;
 			if (params.outlines_only) {
 				params.highlight_style += '-outline'
 			}
-
-			// alter css according to config
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
-				{ backgroundColor: params.highlight_color_blurred }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
-				{ backgroundColor: params.highlight_color }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\s+.cm-matchhighlight-outline/,
-				{ outlineColor: params.highlight_color_blurred, outlineWidth: params.outline_width + 'px' }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight-outline/,
-				{ outlineColor: params.highlight_color }
-			);
-
 			// set highlight on/off
 			toggle_highlight_selected(params.enable_on_load);
 
