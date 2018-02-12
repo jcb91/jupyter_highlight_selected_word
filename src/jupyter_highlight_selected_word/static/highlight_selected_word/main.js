@@ -79,11 +79,10 @@ define([
 	CodeMirror.defineOption("highlightSelectionMatchesInJupyterCells", false, function (cm, val, old) {
 		if (old && old != CodeMirror.Init) {
 			globalState.active = false;
-			if (globalState.overlay) {
-				get_relevant_cells().forEach(function (cell, idx, array) {
-					cell.code_mirror.removeOverlay(globalState.overlay);
-				});
-			}
+			// remove from all relevant, this can fail gracefully if not present
+			get_relevant_cells().forEach(function (cell, idx, array) {
+				cell.code_mirror.removeOverlay(mod_name);
+			});
 			globalState.overlay = null;
 			clearTimeout(globalState.timeout);
 			globalState.timeout = null;
@@ -169,12 +168,10 @@ define([
 		var cells = params.highlight_across_all_cells ? get_relevant_cells() : [
 			$(cm.getWrapperElement()).closest('.cell').data('cell')
 		];
-		var oldOverlay = globalState.overlay; // cached for later function
-		globalState.overlay = newOverlay;
 		cells.forEach(function (cell, idx, array) {
 			// cm.operation to delay updating DOM until all work is done
 			cell.code_mirror.operation(function () {
-				cell.code_mirror.removeOverlay(oldOverlay);
+				cell.code_mirror.removeOverlay(mod_name);
 				if (newOverlay) {
 					cell.code_mirror.addOverlay(newOverlay);
 				}
@@ -215,6 +212,7 @@ define([
 	}
 	function makeOverlay (query, hasBoundary, style) {
 		return {
+			name: mod_name,
 			token: function (stream) {
 				if (stream.match(query) &&
 						(!hasBoundary || boundariesAround(stream, hasBoundary))) {
