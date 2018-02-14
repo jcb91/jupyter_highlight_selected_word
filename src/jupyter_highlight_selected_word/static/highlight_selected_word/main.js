@@ -166,6 +166,8 @@ define([
 			}
 		}
 
+		var siterect = document.getElementById('site').getBoundingClientRect();
+		var viewtop = siterect.top, viewbot = siterect.bottom;
 		var cells = params.highlight_across_all_cells ? get_relevant_cells() : [
 			$(cm.getWrapperElement()).closest('.cell').data('cell')
 		];
@@ -173,7 +175,7 @@ define([
 			// cm.operation to delay updating DOM until all work is done
 			cell.code_mirror.operation(function () {
 				cell.code_mirror.removeOverlay(mod_name);
-				if (newOverlay) {
+				if (newOverlay && is_in_view(cell.element[0], viewtop, viewbot)) {
 					cell.code_mirror.addOverlay(newOverlay);
 				}
 			});
@@ -238,22 +240,11 @@ define([
 
 	/**
 	 *  Return an array of cells to which match highlighting is relevant,
-	 *  dependent on the code_cells_only & only_cells_in_scroll parameters
+	 *  dependent on the code_cells_only parameter
 	 */
 	function get_relevant_cells () {
 		var cells = Jupyter.notebook.get_cells();
-		var relevant_cells = [];
-		var siterect = document.getElementById('site').getBoundingClientRect();
-		var viewtop = siterect.top, viewbot = siterect.bottom;
-		for (var ii = 0; ii < cells.length; ii++) {
-			var cell = cells[ii];
-			if (!params.code_cells_only || cell instanceof CodeCell) {
-				if (!params.only_cells_in_scroll || is_in_view(cell.element[0], viewtop, viewbot)) {
-					relevant_cells.push(cell);
-				}
-			}
-		}
-		return relevant_cells;
+		return params.code_cells_only ? cells.filter(function (c) { return (c instanceof CodeCell); }) : cells;
 	}
 
 	function add_menu_item () {
@@ -297,8 +288,19 @@ define([
 	})();
 
 	function scroll_handler (evt) {
-		if (Jupyter.notebook.mode === 'edit') {
-			throttled_highlight(Jupyter.notebook.get_selected_cell().code_mirror);
+		if (globalState.active && Jupyter.notebook.mode === 'edit' && globalState.overlay) {
+			// add overlay to cells now in view which don't already have it.
+			// Don't bother removing from those no longer in view, as it would just
+			// cause more work for the browser, without any benefit
+			var siterect = document.getElementById('site').getBoundingClientRect();
+			get_relevant_cells().forEach(function (cell) {
+				var cm = cell.code_mirror;
+				if (is_in_view(cell.element, siterect.top, siterect.bot)) {
+					var need_it = !cm.state.overlays.some(function(ovr) {
+						return ovr.modeSpec.name === mod_name; });
+					if (need_it) cm.addOverlay(globalState.overlay);
+				}
+			});
 		}
 	}
 
