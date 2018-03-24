@@ -25,4 +25,7 @@ extended to work across multiple editors.
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
+    # we can't be zip safe as we require templates etc to be accessible to
+    # jupyter server
+    zip_safe=False,
 )
