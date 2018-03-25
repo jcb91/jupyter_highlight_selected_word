@@ -157,6 +157,11 @@ cm.update('notebook', {'highlight_selected_word': {
 Changes
 -------
 
+### 0.1.1
+
+  * bugfix for potential issue in firefox
+  * bugfix to list package as not `zip_safe`
+
 ### 0.1.0
 
   * update compatibility to include notebook 5
