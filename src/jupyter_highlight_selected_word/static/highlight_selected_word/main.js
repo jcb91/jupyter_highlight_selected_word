@@ -54,6 +54,7 @@ define([
 		outline_width: 2,
 		only_cells_in_scroll: true,
 		scroll_min_delay: 100,
+		hide_selections_in_unfocussed: false,
 	};
 
 	// these are set on registering the action(s)
@@ -79,11 +80,10 @@ define([
 	CodeMirror.defineOption("highlightSelectionMatchesInJupyterCells", false, function (cm, val, old) {
 		if (old && old != CodeMirror.Init) {
 			globalState.active = false;
-			if (globalState.overlay) {
-				get_relevant_cells().forEach(function (cell, idx, array) {
-					cell.code_mirror.removeOverlay(globalState.overlay);
-				});
-			}
+			// remove from all relevant, this can fail gracefully if not present
+			get_relevant_cells().forEach(function (cell, idx, array) {
+				cell.code_mirror.removeOverlay(mod_name);
+			});
 			globalState.overlay = null;
 			clearTimeout(globalState.timeout);
 			globalState.timeout = null;
@@ -166,16 +166,16 @@ define([
 			}
 		}
 
+		var siterect = document.getElementById('site').getBoundingClientRect();
+		var viewtop = siterect.top, viewbot = siterect.bottom;
 		var cells = params.highlight_across_all_cells ? get_relevant_cells() : [
 			$(cm.getWrapperElement()).closest('.cell').data('cell')
 		];
-		var oldOverlay = globalState.overlay; // cached for later function
-		globalState.overlay = newOverlay;
 		cells.forEach(function (cell, idx, array) {
 			// cm.operation to delay updating DOM until all work is done
 			cell.code_mirror.operation(function () {
-				cell.code_mirror.removeOverlay(oldOverlay);
-				if (newOverlay) {
+				cell.code_mirror.removeOverlay(mod_name);
+				if (newOverlay && is_in_view(cell.element[0], viewtop, viewbot)) {
 					cell.code_mirror.addOverlay(newOverlay);
 				}
 			});
@@ -215,6 +215,7 @@ define([
 	}
 	function makeOverlay (query, hasBoundary, style) {
 		return {
+			name: mod_name,
 			token: function (stream) {
 				if (stream.match(query) &&
 						(!hasBoundary || boundariesAround(stream, hasBoundary))) {
@@ -239,22 +240,11 @@ define([
 
 	/**
 	 *  Return an array of cells to which match highlighting is relevant,
-	 *  dependent on the code_cells_only & only_cells_in_scroll parameters
+	 *  dependent on the code_cells_only parameter
 	 */
 	function get_relevant_cells () {
 		var cells = Jupyter.notebook.get_cells();
-		var relevant_cells = [];
-		var siterect = document.getElementById('site').getBoundingClientRect();
-		var viewtop = siterect.top, viewbot = siterect.bottom;
-		for (var ii = 0; ii < cells.length; ii++) {
-			var cell = cells[ii];
-			if (!params.code_cells_only || cell instanceof CodeCell) {
-				if (!params.only_cells_in_scroll || is_in_view(cell.element[0], viewtop, viewbot)) {
-					relevant_cells.push(cell);
-				}
-			}
-		}
-		return relevant_cells;
+		return params.code_cells_only ? cells.filter(function (c) { return (c instanceof CodeCell); }) : cells;
 	}
 
 	function add_menu_item () {
@@ -272,6 +262,7 @@ define([
 				.appendTo(menu_item);
 			$('<i/>')
 				.addClass('fa menu-icon pull-right')
+				.css({'margin-top': '-2px', 'margin-right': '-16px'})
 				.prependTo(menu_link);
 		}
 	}
@@ -297,8 +288,19 @@ define([
 	})();
 
 	function scroll_handler (evt) {
-		if (Jupyter.notebook.mode === 'edit') {
-			throttled_highlight(Jupyter.notebook.get_selected_cell().code_mirror);
+		if (globalState.active && Jupyter.notebook.mode === 'edit' && globalState.overlay) {
+			// add overlay to cells now in view which don't already have it.
+			// Don't bother removing from those no longer in view, as it would just
+			// cause more work for the browser, without any benefit
+			var siterect = document.getElementById('site').getBoundingClientRect();
+			get_relevant_cells().forEach(function (cell) {
+				var cm = cell.code_mirror;
+				if (is_in_view(cell.element, siterect.top, siterect.bot)) {
+					var need_it = !cm.state.overlays.some(function(ovr) {
+						return ovr.modeSpec.name === mod_name; });
+					if (need_it) cm.addOverlay(globalState.overlay);
+				}
+			});
 		}
 	}
 
@@ -345,58 +347,45 @@ define([
 		}
 	}
 
-	function alter_css ($ownerNode, selectorTextRegexp, style, retries) {
-		retries = retries !== undefined ? retries : 10;
-		var ii;
-		var stylesheet;
-		for (ii = 0; ii < document.styleSheets.length; ii++) {
-			if ($ownerNode.is(document.styleSheets[ii].ownerNode)) {
-				stylesheet = document.styleSheets[ii];
-				break;
-			}
+	function insert_css () {
+		var css = [// in unselected cells, matches have blurred color
+			// in selected cells, we keep CodeMirror highlight for the actual selection to avoid confusion
+			'.edit_mode .unselected .CodeMirror .cm-matchhighlight {',
+			'	background-color: ' + params.highlight_color_blurred + ';',
+			'}',
+			
+			// in active cell, matches which are not the current selection have focussed color
+			'.edit_mode .CodeMirror.CodeMirror-focused :not(.CodeMirror-selectedtext).cm-matchhighlight {',
+			'    background-color: ' + params.highlight_color + ';',
+			'}',
+			
+			// in all cells, outline matches have blurred color
+			'.edit_mode .CodeMirror .cm-matchhighlight-outline {',
+			'	outline-style: solid;',
+			'	outline-width: ' + params.outline_width + 'px;',
+			'	outline-color: ' + params.highlight_color_blurred + ';',
+			'}',
+			
+			// in active cell, outline matches have focussed color
+			'.edit_mode .CodeMirror.CodeMirror-focused .cm-matchhighlight-outline {',
+			'    outline-color: ' + params.highlight_color + ';',
+			'}'
+		].join('\n');
+
+		if (params.hide_selections_in_unfocussed) {
+			css += [
+				// in unselected cells, selections which are not matches should have no background
+				'.unselected .CodeMirror :not(.cm-matchhighlight).CodeMirror-selected,',
+				'.unselected .CodeMirror :not(.cm-matchhighlight).CodeMirror-selectedtext {',
+				'	background: initial;',
+				'}',
+			].join('\n');
 		}
-		if (stylesheet === undefined) {
-			if (retries > 0) {
-				return setTimeout(function () {
-					alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
-				}, 1000);
-			}
-			console.warn("Couldn't find any stylesheets owned by", $ownerNode);
-			return;
-		}
-		selectorTextRegexp = new RegExp(selectorTextRegexp);
-		// firefox can fail with an InvalidAccessError DOMException on this length check, see
-		// https://github.com/jcb91/jupyter_highlight_selected_word/issues/26
-		var numRules = 0;
-		try {
-			numRules = stylesheet.cssRules.length;
-		}
-		catch (err) {
-			return setTimeout(function () {
-				alter_css($ownerNode, selectorTextRegexp, style, retries - 1);
-			}, 1000);
-		}
-		for (ii = 0; ii < numRules; ii++) {
-			if (selectorTextRegexp.test(stylesheet.cssRules[ii].selectorText)) {
-				$.extend(stylesheet.cssRules[ii].style, style);
-				return;
-			}
-		}
-		console.warn("Couldn't find any rule with a selector matching", selectorTextRegexp, 'in', $ownerNode);
+
+		$('<style type="text/css" id="highlight_selected_word_css">').appendTo('head').html(css);
 	}
 
 	function load_extension () {
-
-		// Load css first
-		var $stylesheet = $('<link/>')
-			.attr({
-				id: 'highlight_selected_word_css',
-				rel: 'stylesheet',
-				type: 'text/css',
-				href: requirejs.toUrl('./main.css')
-			})
-			.appendTo('head');
-
 		// add menu item, as we need it to exist for later
 		// toggle_highlight_selected call to set its icon status
 		add_menu_item();
@@ -408,34 +397,12 @@ define([
 		}, function on_error (reason) {
 			console.warn(log_prefix, 'error loading config:', reason);
 		})
+		.then(insert_css)
 		.then(function () {
 			params.show_token = params.show_token ? new RegExp(params.show_token) : false;
 			if (params.outlines_only) {
 				params.highlight_style += '-outline'
 			}
-
-			// alter css according to config
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror:not\(\.CodeMirror-focused\)\s+.cm-matchhighlight/,
-				{ backgroundColor: params.highlight_color_blurred }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight/,
-				{ backgroundColor: params.highlight_color }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\s+.cm-matchhighlight-outline/,
-				{ outlineColor: params.highlight_color_blurred, outlineWidth: params.outline_width + 'px' }
-			);
-			alter_css(
-				$stylesheet,
-				/^\.notebook_app\.edit_mode\s+\.CodeMirror\.CodeMirror-focused\s+.cm-matchhighlight-outline/,
-				{ outlineColor: params.highlight_color }
-			);
-
 			// set highlight on/off
 			toggle_highlight_selected(params.enable_on_load);
 

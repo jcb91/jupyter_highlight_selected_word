@@ -86,6 +86,11 @@ The available options are:
   `highlight_selected_word.only_cells_in_scroll` is `true`).
   If set to zero, no update is done on scroll.
 
+* `highlight_selected_word.hide_selections_in_unfocussed` - Hide any text
+  selection in non-focussed cells. Otherwise, each cell can show a text
+  selection even when its editor is not focussed, which can be confused with
+  match highlights.
+
 For example, to set the delay to half a second, and limit highlighting to code
 cells, we can use the following python snippet:
 
