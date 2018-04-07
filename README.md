@@ -34,17 +34,13 @@ To use the nbextension, there are three basic steps:
 
         pip install jupyter_highlight_selected_word
 
-    Or, __for those using conda__, there is now a recipe provided through the
-    excellent
-    [conda-forge]()
-    [channel](),
-    which also performs the install into the conda env's jupyter data
-    directory, so you can skip step 2. To install the conda recipe, use
+    Or, __for those using conda__, there is now a recipe provided through the excellent excellent [conda-forge](https://conda-forge.org/) [channel](https://anaconda.org/conda-forge), which also performs the install into the conda env's jupyter data directory, so you can skip step 2. To install the conda recipe, use
 
         conda install -c conda-forge jupyter_highlight_selected_word
 
 2.  Next, install javascript files from the python package into a jupyter data
-    directory.
+    directory. For those using conda, the conda install performs this step
+    automatically, so you can skip this.
 
     If you have jupyter version 4.2 or greater, you can install directly
     using jupyter:
@@ -156,6 +152,12 @@ cm.update('notebook', {'highlight_selected_word': {
 
 Changes
 -------
+
+### 0.2.0
+
+  * optionally hide the selections in non-focussed cells (through CSS classes)
+  * bugfix for overlays not being removed correctly
+  * alter CSS mechanism, so we create a `<style>` in JS, rather than requesting a separate file.
 
 ### 0.1.1
 
