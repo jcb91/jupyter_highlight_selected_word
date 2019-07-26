@@ -24,6 +24,12 @@ extended to work across multiple editors.
 """,
     packages=find_packages('src'),
     package_dir={'': 'src'},
+    classifiers=[
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+    ],
     include_package_data=True,
     # we can't be zip safe as we require css & js to be available for
     # copying into jupyter data directories
