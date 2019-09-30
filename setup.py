@@ -25,6 +25,11 @@ extended to work across multiple editors.
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
+    data_files=[
+      ("etc/jupyter/nbconfig/notebook.d", [
+          "jupyter-config/nbconfig/notebook.d/highlight_selected_word.json"
+      ]),
+    ],
     # we can't be zip safe as we require css & js to be available for
     # copying into jupyter data directories
     zip_safe=False,

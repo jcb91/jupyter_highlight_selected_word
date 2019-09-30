@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "highlight_selected_word/main": true
+  }
+}

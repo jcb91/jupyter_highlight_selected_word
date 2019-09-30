@@ -64,7 +64,7 @@ To use the nbextension, there are three basic steps:
 3.  Enable the nbextension, so that it gets loaded automatically in each
     notebook:
 
-        jupyter nbextension enable highlight_selected_word/main
+        jupyter nbextension enable highlight_selected_word/main  # can be skipped for notebook >=5.3
 
 
 Options
